@@ -22,12 +22,31 @@ So here's what we'll look at today
 
 # Generating random numbers
 
-We can generate random numbers from different distributions via the functions for pulling random deviates.  These functions always start with `r`.
+An easy way to generate numeric data in a simulation situation is to pull random numbers from different distributions via the functions for pulling random deviates.  These functions always start with `r` (for "random").
 
-The basic distributions that I use the most for generating random numbers are the normal (`rnorm()`), uniform (`runif()`), and Poisson (`rpois()`) distributions.  There are many others available as part of the **stats** package (e.g., binomial, log normal, beta, exponential, Gamma) and, as you can imagine, even more available in add-on packages.  
+The basic distributions that I use the most for generating random numbers are the normal (`rnorm()`), uniform (`runif()`), and Poisson (`rpois()`) distributions.  There are many others available as part of the **stats** package (e.g., binomial, log normal, beta, exponential, Gamma) and, as you can imagine, even more available in add-on packages.  I recently needed to generate data from the Tweedie distribuiton, which I could do via package **tweedie**!  
 
 ## `rnorm()` for random numbers from the normal distribution
+
+
+> rnorm(n, mean = 0, sd = 1)
 
 ## `runif()` pulls from the uniform distribution
 
 ## Discrete counts with `rpois()`
+
+# `rep()` for repeating vectors
+
+Quantitative variables are great, but in simulations we're going to need categorical variables, as well!  Most often in my work these are some sort of "grouping" variable or "treatment".
+
+## Using `letters` and `LETTERS`
+
+## `each`
+
+## `times`
+
+## `length.out`
+
+# Repeatedly simulating data with `replicate()`
+
+The `replicate()` function is a real workhorse when making repeated simulations.
