@@ -1,0 +1,33 @@
+---
+title: "Helpful functions for simulating data in R"
+author: "Ariel Muldoon"
+date: "August 28, 2018"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Overview
+
+There are many reasons we might want to simulate data in R, and I find being able to simulate data to be incredible useful in my day-to-day work.  Today I'm going to talk some of the functions R has available that are useful to get to know when simulating data.  While some of them may already be familiar to you, I thought we'd take a closer look at how to use them.
+
+So here's what we'll look at today
+
+1. Explore random number generation with `rnorm()`, `runif()` and `rpois()` (rbinom?)
+2. Use `rep()` to generate grouped variables
+3. Dive into `replicate()` for repeating data simulation many times
+4. (Possibly) Talk about looping through the simulations and pulling out results via `purrr::map()` loops and/or `for()` loops.
+
+# Generating random numbers
+
+We can generate random numbers from different distributions via the functions for pulling random deviates.  These functions always start with `r`.
+
+The basic distributions that I use the most for generating random numbers are the normal (`rnorm()`), uniform (`runif()`), and Poisson (`rpois()`) distributions.  There are many others available as part of the **stats** package (e.g., binomial, log normal, beta, exponential, Gamma) and, as you can imagine, even more available in add-on packages.  
+
+## `rnorm()` for random numbers from the normal distribution
+
+## `runif()` pulls from the uniform distribution
+
+## Discrete counts with `rpois()`
