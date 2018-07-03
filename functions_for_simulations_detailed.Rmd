@@ -1,5 +1,5 @@
 ---
-title: "Helpful functions for simulating data in R"
+title: "Getting started with simulating data in R: some helpful functions and how to use them"
 author: "Ariel Muldoon"
 date: "August 28, 2018"
 output: pdf_document
@@ -11,41 +11,233 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Overview
 
-There are many reasons we might want to simulate data in R, and I find being able to simulate data to be incredible useful in my day-to-day work.  Today I'm going to talk some of the functions R has available that are useful to get to know when simulating data.  While some of them may already be familiar to you, I thought we'd take a closer look at how to use them.
+There are many reasons we might want to simulate data in R, and I find being able to simulate data to be incredible useful in my day-to-day work.  But how does someone get started simulating data?  Today I'm going to talk some of the functions R has available that are useful to get to know when simulating data.  While some of them may already be familiar to you, I thought we'd take a closer look at how to use them.
 
-So here's what we'll look at today
+Here's the goal for today:
 
-1. Explore random number generation with `rnorm()`, `runif()` and `rpois()` (rbinom?)
-2. Use `rep()` to generate grouped variables
+1. Simulate quantitative variables via random number generation with `rnorm()`, `runif()` and `rpois()` (rbinom?)
+2. Generate character variables that represent groups via `rep()`.  We'll explore how to create variables with different patterns.
 3. Dive into `replicate()` for repeating data simulation many times
 4. (Possibly) Talk about looping through the simulations and pulling out results via `purrr::map()` loops and/or `for()` loops.
 
 # Generating random numbers
 
-An easy way to generate numeric data in a simulation situation is to pull random numbers from different distributions via the functions for pulling random deviates.  These functions always start with `r` (for "random").
+An easy way to generate numeric data in a simulation situation is to pull random numbers from some distribution.  This can be done via the functions for pulling random deviates.  These functions always start with `r` (for "random").
 
-The basic distributions that I use the most for generating random numbers are the normal (`rnorm()`), uniform (`runif()`), and Poisson (`rpois()`) distributions.  There are many others available as part of the **stats** package (e.g., binomial, log normal, beta, exponential, Gamma) and, as you can imagine, even more available in add-on packages.  I recently needed to generate data from the Tweedie distribuiton, which I could do via package **tweedie**!  
+The basic distributions that I use the most for generating random numbers are the normal (`rnorm()`), uniform (`runif()`), and Poisson (`rpois()`) distributions.  There are many others available as part of the **stats** package (e.g., binomial, log normal, beta, exponential, Gamma) and, as you can imagine, even more available in add-on packages.  I recently needed to generate data from the Tweedie distribution to test a modeling tool, which I could do via package **tweedie**.  
 
-## `rnorm()` for random numbers from the normal distribution
+The `r` distribution functions all work basically the same way.  We define how many random numbers we want to generate in the first argument (`n`) and then define the parameters for the distribution we want to draw from.  This is easier to see with practice, so let's get started.
 
+## `rnorm()` to generate random numbers from the normal distribution
+
+I use `rnorm()` a lot, sometimes with good reason and other times when I need some numbers and I really don't care too much about what they are.
+
+There are three arguments to `rnorm()`.  From the `Usage` section of the documentation:
 
 > rnorm(n, mean = 0, sd = 1)
 
+The `n` argument is the number of observations we want.  The `mean` and `sd` arguments show what the default values are (note that `sd` is the *standard deviation*, not the variance).
+
+To get 5 random numbers from a $Normal(0, 1)$ (aka the *standard* normal) distribution I can write code like:
+
+```{r}
+rnorm(5)
+```
+
+There's a couple things about this code and output to discuss.  
+
+First, if you were to run this code you would get different numbers.  To get reproducible random numbers we need to *set the seed*.
+
+### Setting the random seed for reproducible random numbers
+
+If you need to reproduce the random numbers you got so you can generate the exact same numbers you'll need to set the seed via `set.seed()`.
+
+Setting the seed means the random numbers generated are reproducible.  I use this in teaching/blogging so that anyone following along with my code will be able to exactly reproduce my results.  I also will set the seed when I'm working on a repeated simulation and I want to make sure that a function I wrote works correctly.  Otherwise in most simulations we don't actually want to set the seed.
+
+If we set the seed, run the random number generation and then do it again we will get the same values.
+
+```{r}
+set.seed(16)
+rnorm(5)
+```
+
+```{r}
+set.seed(16)
+rnorm(5)
+```
+
+Second, the code I used got me 5 numbers, which is what I wanted, but the code itself isn't particularly clear.  What I would call lazy coding on my part can look pretty mysterious to someone reading my code (or to my future self reading my code).  It's not clear exactly what the parameters of the distribution was set to since I used the default settings.  
+
+Here's clearer code to do the same thing, where I write out the mean and standard deviation arguments even though I'm using the default values.  It is not necessary to always be this careful, but I figure it's better to start out understanding the code and then you can start taking shortcuts later.
+
+```{r}
+rnorm(n = 5, mean = 0, sd = 1)
+```
+
+### Change parameters in `rnorm()`
+
+For getting a quick set of numbers it's easy to use the default parameter values in `rnorm()`.  But we can definitely change these.  When I'm exploring long-run behavior of variance estimated from linear models, though, I'll focus on different standard deviations.
+
+The `sd` argument shows the *standard deviation* of the normal distribution.  So drawing from a $Normal(0, 4)$ would be achieved by setting `sd` to 2.
+
+```{r}
+rnorm(10, mean = 0, sd = 2)
+```
+
+I've seen others change the mean and standard deviation to get more specific ranges of variables.
+
+If the mean is large and the standard deviation small in relation to the mean we can generate strictly positive numbers.  (I usually use `runif()` for this, which we'll see below).
+
+```{r}
+rnorm(6, mean = 50, sd = 20)
+```
+
+### Using vectors for the parameter arguments
+
+We can pull random numbers from a normal distribution with distinct parameters if we use a vector for the parameter arguments.  For example, this could be useful for simulating data with different group means but the same variance (like we would use if fitting an ANOVA).
+
+I'll keep the standard deviation at 1 but will draw data with a mean of 0, 5, and 20.  Note that repeating pattern: the function draws one value from each distribution until the total number requested is reached.
+
+```{r}
+rnorm(10, mean = c(0, 5, 20), sd = 1)
+```
+
+```{r}
+rnorm(5, mean = c(0, 5, 20), sd = 1)
+```
+
+## Using simulated data
+
+Up to this point we've printed the results of each simulation but we haven't done anything with it.  
+
+In reality we'd want to save our vectors as objects in R to use them for some further analysis.  For example, maybe we want to simulate two unrelated variables.  This can be a fun exercise to drive home how by chance we can see variables that appear to be related even though we know they are not.
+
+I'll generate two quantitative vectors of length 10, which I'll name `x` and `y`, and plot the results.
+
+```{r}
+x = rnorm(10, 0, 1)
+y = rnorm(10, 0, 1)
+plot(y ~ x)
+```
+
+Depending on the simulation goal, storing the vectors in a data.frame can help keeps things organized.
+
+```{r}
+dat = data.frame(x = rnorm(10, 0, 1),
+                 y = rnorm(10, 0, 1) )
+plot(y ~ x, data = dat)
+```
+
+
 ## `runif()` pulls from the uniform distribution
+
+Pulling random numbers from other distributions is extremely similar to using `rnorm()`, and we'll go through them more quickly.
+
+I've started using `runif()` more regularly, especially when I want to generate numbers that are strictly positive but continuous.  The uniform distribution are continuous numbers uniformly distributed between some minimum and maximum.
+
+From `Usage` we can see that by default we pull random numbers between 0 and 1.  The first argument, as with all of these `r` functions, is the number of numbers we want to randomly generate:
+
+> runif(n, min = 0, max = 1)
+
+Let's generate 5 numbers between 0 and 1.
+
+```{r}
+runif(5, 0, 1)
+```
+
+What if we want to generate 5 numbers between 50 and 100?  We can change the parameter values.
+
+```{r}
+runif(5, 50, 100)
+```
+
+I've used this when I wanted to show the effect of having very different ranges of variables on the size of the estimated coefficient in a regression.
+
+Let's generate some data with the response variable (`y`) pulled from a standard normal distribution and the explanatory variable with values between 1 and 2.
+
+We'll use the data in a regression model fit via `lm()`.  Let's set the seed so we can reproduce `y` when we change the range of the explanatory variable.
+
+```{r}
+set.seed(16)
+dat = data.frame(x = runif(10, 1, 2),
+                 y = rnorm(10, 0, 1) )
+lm(y ~ x, data = dat)
+```
+
+Now simulate a new dataset with the same `y` but an explanatory variable between 100 and 200.  You'll see new slope coefficient is exactly 1/100th of the coefficient above.
+
+```{r}
+set.seed(16)
+
+dat = data.frame(x = runif(10, 100, 200),
+                 y = rnorm(10, 0, 1) )
+lm(y ~ x, data = dat)
+```
 
 ## Discrete counts with `rpois()`
 
-# `rep()` for repeating vectors
+Let's look at one last function for generating random numbers, this time for generating discrete integers (including 0) from a Poisson distribution with `rpois()`.
 
-Quantitative variables are great, but in simulations we're going to need categorical variables, as well!  Most often in my work these are some sort of "grouping" variable or "treatment".
+I use `rpois()` for generating counts for generalized linear models.  This can also be used to get an idea of the shape of the Poisson distribution with different means, which can be enlightening when thinking about a distribution to analyze count data with.
+
+The Poisson distribution is a single parameter distribution.  The function looks like:
+
+> rpois(n, lambda)
+
+Note there is only a single parameter, which is the mean, and it has no default setting.
+
+Let's generate a few values from a Poisson distribution with a mean of 2.5.  Note that mean can be any non-negative value (i.e., it doesn't have to be an integer).
+
+```{r}
+rpois(5, lambda = 2.5)
+```
+
+Let's explore the Poisson distribution a little more.  Let's draw 100 values from a Poisson distribution with a mean of 5.  We'll name this vector `y` and take a look at a summary of those values.
+
+
+```{r}
+y = rpois(100, lambda = 5)
+```
+
+The vector of values we simulated fall between 1 and 12.
+
+```{r}
+summary(y)
+```
+
+We can see there is mild right-skew when we draw a histogram of the values.
+
+```{r}
+hist(y)
+```
+
+Let's do the same thing for a Poisson distribution with a mean of 100.  The range of values is pretty narrow.
+
+```{r}
+y = rpois(100, lambda = 100)
+summary(y)
+```
+
+And the distribution looks pretty symmetric compared to the smaller mean.
+
+```{r}
+hist(y)
+```
+
+
+# Generate character vectors with `rep()` 
+
+Quantitative variables are great, but in simulations we're going to need categorical variables, as well.  Most often in my work these are some sort of "grouping" or "treatment" variable.
 
 ## Using `letters` and `LETTERS`
 
-## `each`
+## The `each` argument
 
-## `times`
+## The `times` argument
 
-## `length.out`
+## The `length.out` argument
+
+The `length.out` argument has `rep()` repeat the vector much like `each` does.  However, it repeats only until the defined length is reached.  Using `length.out` allows for unbalanced groups, where the other options we looked at above did not.  
 
 # Repeatedly simulating data with `replicate()`
 
