@@ -225,19 +225,122 @@ hist(y)
 ```
 
 
-# Generate character vectors with `rep()` 
+# Generate character vectors with `rep()`
 
 Quantitative variables are great, but in simulations we're going to need categorical variables, as well.  Most often in my work these are some sort of "grouping" or "treatment" variable.
 
 ## Using `letters` and `LETTERS`
 
-## The `each` argument
+One thing you might see when looking at someone's simulation code is the use of `letters` or `LETTERS` for creating categorical variables.  These are *built in constants* in R.  `letters` is for the 26 lowercase letters of the Roman alphabet and `LETTERS` for the same in uppercase.
 
-## The `times` argument
+Letters can be pulled out via the extract brackets (`[`).  I use these for pure convenience when I need some quick categorical vectors.  SI find it easier to type out the work and brackets than a vector of characters.
 
-## The `length.out` argument
+```{r}
+letters[1:2]
+```
 
-The `length.out` argument has `rep()` repeat the vector much like `each` does.  However, it repeats only until the defined length is reached.  Using `length.out` allows for unbalanced groups, where the other options we looked at above did not.  
+```{r}
+LETTERS[10:26]
+```
+
+## Repeat each element of a vector with `each`
+
+Since character variables often represent some sort of grouping, we need to have multiple observations of each character in some pattern.  The `rep()` function is one way to avoid having to manually write out the vector.
+
+There are three arguments that help us repeat with different patterns: `each`, `times`, and `length.out` that can be used individually or in combination.
+
+With `each` we repeat each unique character in the vector the number of times we define.  The characters are therefore clumped together.  
+
+This is the sort of grouping variable I might make for simulating for a two-sample analysis.
+
+```{r}
+rep(letters[1:2], each = 3)
+```
+
+## Repeat a whole vector with the `times` argument
+
+Another way to repeat a vector is to repeat the whole vector rather than repeat it elementwise like we did with `each`. That's what the `times` argument is for.
+
+We'll make a two-group variable again, but this time we'll change the pattern of the values in the variable.
+
+```{r}
+rep(letters[1:2], times = 3)
+```
+
+## Repeat each element a different number of `times`
+
+We can use `times` with a vector instead of an integer value to repeat each element of the character vector a different number of times.  This is one way to simulate unbalanced groups.
+
+Let's repeat the first element twice but the second three times.
+
+```{r}
+rep(letters[1:2], times = c(2, 3) )
+```
+
+## Using `length.out` argument
+
+The `length.out` argument has `rep()` repeat the whole vector much like `times` does.  However, it repeats only until the defined length is reached.  Using `length.out` is another way to get unbalanced groups.  
+
+Rather than defining the number of repeats like we did with `each` and `times` we define how long the final variable should be.  Here's I'll make a two-group variable of length 5, so one group will have one less value than the other.
+
+```{r}
+rep(letters[1:2], length.out = 5)
+```
+
+## Combining `each` with `times`
+
+Depending on how complicated the situation is that you are simulating data for, you may need more complicated patterns in your categorical variable.  The `each` argument can be combined with `times` to first repeat each value elementwise (via `each`) and then repeat that pattern.
+
+When we use `times` this way it must take a single value and not a vector.
+
+```{r}
+rep(letters[1:2], each = 2, times = 3)
+```
+
+## Combining `each` with `length.out`
+
+Similarly we can use `each` with `length.out`.  This can impart imbalance.
+
+```{r}
+rep(letters[1:2], each = 2, length.out = 7)
+```
+
+Note you can't use `length.out` and `times` together (if you try, `length.out` will be given priority and `times` ignored).
+
+# Creating combinations of quantiative and categorical data
+
+We now have some tools for creating quantitative data as well as categorical.  Which means we can make an actual dataset!
+
+Let's start by simulating data that we would use in a simple two-sample analsyis.
+
+This is mostly using the tools we did but putting things in a data.frame to keep things organized.
+
+One option is to make separate vectors of different lengths and then bind them together via `data.frame()`.  Notice there is no need to use `cbind()` here, which we often think we need as R beginners,.  Instead we can use `data.frame()` directly.
+
+```{r}
+group = rep(letters[1:2], each = 3)
+response = rnorm(6, 0, 1)
+data.frame(group,
+           response)
+```
+
+If I'm going to make a data.frame like this I prefer to make my vectors and the data.frame simultaneously to avoid having a lot of variables cluttering up my R Environment.
+
+```{r}
+data.frame(group = rep(letters[1:2], each = 3),
+           response = rnorm(6, 0, 1) )
+```
+
+Now let's add another categorical variable.  Let's say we have a situation with two factors.  Each observation has a value of `group` and a value of second factor we'll call `factor`.  That factor will take on the values "C", "D", and "E".
+
+This means we need to repeat the variable with a different pattern than `group`.
+
+```{r}
+data.frame(group = rep(letters[1:2], each = 3),
+           factor = rep(LETTERS[3:5], times = 2),
+           response = rnorm(6, 0, 1) )
+```
+
 
 # Repeatedly simulating data with `replicate()`
 
