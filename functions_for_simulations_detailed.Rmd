@@ -307,15 +307,15 @@ rep(letters[1:2], each = 2, length.out = 7)
 
 Note you can't use `length.out` and `times` together (if you try, `length.out` will be given priority and `times` ignored).
 
-# Creating combinations of quantiative and categorical data
+# Creating datasets with quantiative and categorical variables
 
-We now have some tools for creating quantitative data as well as categorical.  Which means we can make an actual dataset!
+We now have some tools for creating quantitative data as well as categorical.  Which means we can make a dataset!  Maybe this is for a simulation or maybe it's a simple example for testing complicated code.  We'll do several simple ones to get the idea.
 
-Let's start by simulating data that we would use in a simple two-sample analsyis.
+Let's start by simulating data that we would use in a simple two-sample analysis with no difference between groups.
 
-This is mostly using the tools we did but putting things in a data.frame to keep things organized.
+We need to use the tools we learned above but we now name results and put them into a data.frame (this latter step isn't always necessary, but does help keep things organized in certain types of simulations).
 
-One option is to make separate vectors of different lengths and then bind them together via `data.frame()`.  Notice there is no need to use `cbind()` here, which we often think we need as R beginners,.  Instead we can use `data.frame()` directly.
+One option is to make separate vectors of different lengths and then bind them together via `data.frame()`.  Notice there is no need to use `cbind()` here, which we often think we need as R beginners (I know I did!).  Instead we can use `data.frame()` directly.
 
 ```{r}
 group = rep(letters[1:2], each = 3)
@@ -324,7 +324,7 @@ data.frame(group,
            response)
 ```
 
-If I'm going to make a data.frame like this I prefer to make my vectors and the data.frame simultaneously to avoid having a lot of variables cluttering up my R Environment.
+When I make a data.frame like this I prefer to make my vectors and the data.frame simultaneously to avoid having a lot of variables cluttering up my R Environment.  I often teach/blog with all the steps clearly delineated as I think it's easier when you are starting out, so (as always) use the method that works for you.
 
 ```{r}
 data.frame(group = rep(letters[1:2], each = 3),
@@ -341,7 +341,94 @@ data.frame(group = rep(letters[1:2], each = 3),
            response = rnorm(6, 0, 1) )
 ```
 
+The dataset so far has been one with "no difference" among groups.  What if the means were different between groups.  Let's make two groups of three observations where the mean of one group is 5 and the other 10 but with a shared variance of 1.
+
+Remembering how `rnorm()` works with a vector of means is key here.  The function draws iteratively from each distribution.  To get the groups in the correct order we need to use `times`.
+
+```{r}
+data.frame(group = rep(letters[1:2], times = 3),
+           response = rnorm(6, mean = c(5, 10), sd = 1) )
+```
+
+For our last dataset let's make two unrelated variables, one between 10 and 15 and one between 100 and 150.  We can add some groups here, so let's have 10 obserations of each quantitative variable in each group.
+
+Sometimes it's keeping track of the different numbers that can be hard.  We use `each = 10)` to repeat each element of the vector 10 times to get a total of 20 but use n = 20 in `runif()`.
+
+```{r}
+data.frame(group = rep(LETTERS[3:4], each = 10),
+           x = runif(20, 10, 15),
+           y = runif(20, 100, 150))
+```
+
 
 # Repeatedly simulating data with `replicate()`
 
-The `replicate()` function is a real workhorse when making repeated simulations.
+The `replicate()` function is a real workhorse when making repeated simulations.  It is a member of the *apply* family in R, and is specifically made (per the documentation) for the *repeated evaluation of an expression (which usually involves random number generations)*.  We want to repeatedly simulate data that invovles random number generation, so that sounds like a useful tool!
+
+The `replicate()` function takes three arguments:
+
+* `n`, which is the number of replications to perform.  This is to set the number of repeated runs desired.  
+* `expr`, the expression that should be run repeatedly.  This is often a function.  
+* `simplify`, which controls the type of output the results of `expr` are saved into.  Use `simplify = FALSE` to get vectors saved into a list instead of in an array.  
+
+## Simple example of replicate()
+
+Let's say we want to simulate some values from a normal distribution, which we can do using the `rnorm()` function as above.  But now instead of drawing some number of values from a distribution one time I want to do it many times.  This could be a classic example of the central limit theorem or something.
+
+Doing the random number generation many times is where `replicate()` comes in.  It allows us to run the function in `expr` exactly `n` times.  
+
+Here I'll ask for three runs of 5 values each with a mean of 0 and a standard deviation of 1.  Notice the addition of `simplify = FALSE` to get a list as output.
+
+The output below is a list of three vectors.  Each vector is from a unique run of the function, so contains  five random numbers drawn from the normal distribution with a mean of 0 and standard deviation of 1.
+
+```{r}
+set.seed(16)
+replicate(n = 3, expr = rnorm(5, 0, 1), simplify = FALSE )
+```
+
+Note if I don't use `simplify = FALSE` I will get a matrix of values instead of a list.  Each column in the matrix is the output from one run of the function.  In this case there will be three columns in the output, one for each run, and 5 rows.  This can be a useful output type for some simulations.  I focus on list output throughout the rest of this post only because that's what I have been using recently for simulations.
+
+```{r}
+set.seed(16)
+replicate(n = 3, expr = rnorm(5, 0, 1) )
+```
+
+## An equivalent for() loop example
+
+A `for()` loop can be used in place of `replicate()` for simulations.  With time and practice I've found `replicate()` to be much more convenient in terms of writing the code.  However, in my experience some folks find `for()` loops intuitive when they are starting out in R.  I think it's because `for()` loops are more explicit on the looping process: the user can see that `i` is looped over and the output for each `i` iteration is saved into the output object because the code is written out explicitly.
+
+In my example I'll save the output of each iteration of the loop into a list called `list1`.  I initialize this as an empty list prior to starting the loop.  To match what I did with `replicate()` I do three iterations of the loop (`i in 1:3`), drawing 5 values via `rnorm()` each time.
+
+The result is identical to my `replicate()` code above.  It took a little more code to do it but the process is very clear since it is explicitly written out.
+
+```{r}
+set.seed(16)
+list1 = list() # Make an empty list to save output in
+for (i in 1:3) { # Indicate number of iterations with "i"
+    list1[[i]] = rnorm(5, 0, 1) # Save output in list for each iteration
+}
+list1
+```
+
+## Using `replicate()` to repeatedly make a dataset
+
+Earlier we were making datasets with random numbers and some grouping variables.  We could put this process for the `expr` argument in `replicate()` to get many simulated datasets.  I could see doing something like this if I wanted to apply different methods to the same simulated datasets to compare them.
+
+I'll replicate things 3 times again to easily see the output.  I still use `simplify = FALSE` to get things into a list.
+
+```{r, results = "asis"}
+replicate(n = 3, 
+          data.frame(group = rep(letters[1:2], each = 3),
+                     response = rnorm(6, 0, 1) ),
+          simplify = FALSE)
+```
+
+# Now that we have the tools, what's next?
+
+For a simulation to explore long-run behavior there is going to be some sort of repeating the process, which we did via `replicate()`, and then getting whatever results are of interest.  This latter process is often going to involve some sort of looping.  By saving our generated variables or data.fraes into a list we've made it so we can loop via list looping functions like `lapply()` or `purrr::map()`.  The family of *map* functions are newer and have a lot of convenient output types that make them pretty useful.  I go over a few of those in my blog post [A closer look at replicate() and purrr::map() for simulations](https://aosmith.rbind.io/2018/06/05/a-closer-look-at-replicate-and-purrr/).
+
+
+
+
+
+
