@@ -5,10 +5,6 @@ date: "August 28, 2018"
 output: pdf_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
 # Overview
 
 There are many reasons we might want to simulate data in R, and I find being able to simulate data to be incredible useful in my day-to-day work.  But how does someone get started simulating data?  
@@ -18,14 +14,14 @@ Today I'm going to take a closer look at some of the R functions that are useful
 Here's the goal for today:
 
 1. Simulate quantitative variables via random number generation with `rnorm()`, `runif()` and `rpois()`
-2. Generate character variables that represent groups via `rep()`.  We'll explore how to create character vectors with different patterns of repeating.
-3. Dive into `replicate()` for repeating data simulation many times
+2. Generate character variables that represent groups via `rep()`.  We'll explore how to create character vectors with different repeating patterns
+3. Learn to use `replicate()` to repeat the data simulation process many times
 
 # Generating random numbers
 
-An easy way to generate numeric data in a simulation situation is to pull random numbers from some distribution.  This can be done via the functions for pulling random deviates from some distribution.  These functions always start with `r` (for "random").
+An easy way to generate numeric data is to pull random numbers from some distribution.  This can be done via the functions for pulling random deviates from some distribution.  These functions always start with `r` (for "random").
 
-The basic distributions that I use the most for generating random numbers are the normal (`rnorm()`) and uniform (`runif()`) distributions.  We'll look at those today, plus the Poisson (`rpois()`) distribution for generating discrete counts.  
+The basic distributions that I use the most for generating random numbers are the normal (`rnorm()`) and uniform (`runif()`) distributions.  We'll look at those today, plus the Poisson (`rpois()`) distribution for generating discrete counts. 
 
 There are many other distributions available as part of the **stats** package (e.g., binomial, log normal, beta, exponential, Gamma) and, as you can imagine, even more available in add-on packages.  I recently needed to generate data from the Tweedie distribution to test a modeling tool, which I could do via package **tweedie**.  
 
@@ -59,19 +55,23 @@ Making sure someone else will be able to exactly reproduce the results when runn
 
 Otherwise in most simulations we don't actually want to set the seed.
 
-If we set the seed, run the random number generation and then do it again we will get the same values.
+If we set the seed, we can reproduce the values we generated.
 
 ```{r}
 set.seed(16)
 rnorm(5)
 ```
 
+If we run the code again, we get the same values.
+
 ```{r}
 set.seed(16)
 rnorm(5)
 ```
 
-Second, the code I used got me 5 numbers, which is what I wanted.  However, the code itself isn't particularly clear.  What I would call lazy coding on my part can look pretty mysterious to someone reading my code (or to my future self reading my code).  It's not clear exactly what the parameters of the distribution were set to since I used the default settings.  
+### Writing out arguments in for clearer code
+
+Second, the code I used got me 5 numbers, which is what I wanted.  However, the code itself isn't particularly clear.  What I would call lazy coding on my part can look pretty mysterious to someone reading my code (or to my future self reading my code).  Since I used the default values for `mean` and `sd`, it's not clear exactly what the parameters of the distribution were.  
 
 Here's clearer code to do the same thing, where I write out the mean and standard deviation arguments explicitly even though I'm using the default values.  It is certainly not necessary to always be this careful, but I don't think it's ever a bad thing to have clear code.
 
@@ -81,7 +81,7 @@ rnorm(n = 5, mean = 0, sd = 1)
 
 ### Change parameters in `rnorm()`
 
-For getting a quick set of numbers it's easy to use the default parameter values in `rnorm()`.  When I'm exploring long-run behavior of variance estimated from linear models, though, I often focus on different standard deviation values.
+For getting a quick set of numbers it's easy to use the default parameter values in `rnorm()`.  When I'm exploring long-run behavior of variance estimated from linear models, though, I will explore different standard deviation values.
 
 The `sd` argument shows the *standard deviation* of the normal distribution.  So drawing from a $Normal(0, 4)$ can be done by setting `sd` to 2.
 
@@ -97,7 +97,7 @@ For example, if the mean is large and the standard deviation small in relation t
 rnorm(n = 5, mean = 50, sd = 20)
 ```
 
-### Using vectors for the parameter arguments
+### Using vectors of values for the parameter arguments
 
 We can pull random numbers from a normal distribution with distinct parameters if we use a vector for the parameter arguments.  For example, this could be useful for simulating data with different group means but the same variance.  We might want to use something like this if we were making data that we would fit using an ANOVA.
 
@@ -121,7 +121,7 @@ But *not* to `n`.  If a vector is passed to `n` then the length of that vector i
 rnorm(n = c(2, 10, 10), mean = c(0, 5, 20), sd = c(1, 5, 20) )
 ```
 
-## Using simulated numbers
+## Example of using the simulated numbers from `rnorm()`
 
 Up to this point we've printed the results of each simulation but we haven't done anything with it.  
 
@@ -148,7 +148,7 @@ plot(y ~ x, data = dat)
 
 Pulling random numbers from other distributions is extremely similar to using `rnorm()`, and we'll go through them more quickly.
 
-I've started using `runif()` pretty regularly, especially when I want to generate numbers that are strictly positive but continuous.  The uniform distribution are continuous numbers uniformly distributed between some minimum and maximum.
+I've started using `runif()` pretty regularly, especially when I want to generate numbers that are strictly positive but continuous.  The uniform distribution is a continuous distribtuion, with numbers uniformly distributed between some minimum and maximum.
 
 From `Usage` we can see that by default we pull random numbers between 0 and 1.  The first argument, as with all of these `r` functions, is the number of numbers we want to randomly generate:
 
@@ -165,6 +165,8 @@ What if we want to generate 5 numbers between 50 and 100?  We can change the par
 ```{r}
 runif(n = 5, min = 50, max = 100)
 ```
+
+## Example of using the simulated numbers from `runif()`
 
 I've used `runif()` when I wanted to show the effect of having variables with very different magnitudes on the size of the estimated coefficient in a regression.
 
@@ -213,7 +215,7 @@ Let's generate five values from a Poisson distribution with a mean of 2.5.  Note
 rpois(n = 5, lambda = 2.5)
 ```
 
-### Exploring the Poisson distribution using `rpois()`
+## Example of using the simulated numbers from `rpois()`
 
 Let's explore the Poisson distribution a little more, seeing how the distribution looks when changing the mean.  Being able to look at how the Poisson distribution changes with the mean via simulation helped me understand the the distribution better, and become a lot more aware of why it so often does a poor job for ecological count data.
 
@@ -343,7 +345,7 @@ Note you can't use `length.out` and `times` together (if you try, `length.out` w
 
 We now have some tools for creating quantitative data as well as categorical.  Which means we can make a dataset!  We'll create several simple ones to get the idea.
 
-## Simulate data wtih no differences among groups
+## Simulate data with no differences among two groups
 
 Let's start by simulating data that we would use in a simple two-sample analysis with no difference between groups.  We'll make a total of 6 observations, three for each group.
 
@@ -380,9 +382,10 @@ data.frame(group = rep(letters[1:2], each = 3),
            factor = rep(LETTERS[3:5], times = 2),
            response = rnorm(n = 6, mean = 0, sd = 1) )
 ```
+
 ## Simulate data with a difference among groups
 
-The dataset so far has been one with "no difference" among groups.  What if the means were different between groups?  Let's make two groups of three observations where the mean of one group is 5 and the other 10.  The two groups have a shared variance (and so stanard deviation) of 1.
+The dataset above is one with "no difference" among groups.  What if the means were different between groups?  Let's make two groups of three observations where the mean of one group is 5 and the other 10.  The two groups have a shared variance (and so stanard deviation) of 1.
 
 Remembering how `rnorm()` works with a vector of means is key here.  The function draws iteratively from each distribution.  
 
@@ -398,7 +401,7 @@ group = rep(letters[1:2], times = 3)
 group
 ```
 
-Which can then be combined into a data.frame.  working out this process is another reason why sometimes we build each vector separately prior to combining together.
+These can then be combined into a data.frame.  Working out this process is another reason why sometimes we build each vector separately prior to combining together.
 
 ```{r}
 data.frame(group,
@@ -409,7 +412,7 @@ data.frame(group,
 
 For our last dataset let's make two unrelated quantitative variables, one between 10 and 15 and one between 100 and 150. We also have two groups, with 10 observations of each quantitative variable in each group.
 
-I've found that getting the numbers correct when working with simulatiosn with both quantitative and categorical variables takes some practice.  
+I've found that getting the numbers correct when working with simulations with both quantitative and categorical variables takes some practice.  
 
 Here we use `each = 10` to repeat each element of the vector 10 times to get a total of 20 observations.  We are drawing values of the quantitative values overall, though, not by group, so use `n = 20` in `runif()`.
 
@@ -452,7 +455,7 @@ Note if I don't use `simplify = FALSE` I will get a matrix of values instead of 
 
 ```{r}
 set.seed(16)
-replicate(n = 3, expr = rnorm(5, 0, 1) )
+replicate(n = 3, expr = rnorm(n = 5, mean = 0, sd = 1) )
 ```
 
 ## An equivalent for() loop example
@@ -467,7 +470,7 @@ The result is identical to my `replicate()` code above.  It took a little more c
 set.seed(16)
 list1 = list() # Make an empty list to save output in
 for (i in 1:3) { # Indicate number of iterations with "i"
-    list1[[i]] = rnorm(b = 5, mean = 0, sd = 1) # Save output in list for each iteration
+    list1[[i]] = rnorm(n = 5, mean = 0, sd = 1) # Save output in list for each iteration
 }
 list1
 ```
