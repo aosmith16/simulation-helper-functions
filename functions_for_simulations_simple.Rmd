@@ -25,6 +25,14 @@ Pull 5 random numbers from a standard normal distribution.
 rnorm(5)
 ```
 
+### Writing out arguments for clearer code
+
+Using the defaults makes for quick coding but does not make the parameters of the generating distribution clear.
+
+```{r}
+rnorm(n = 5, mean = 0, sd = 1)
+```
+
 ### Setting the random seed for reproducible random numbers
 
 To reproduce the random numbers, set the seed via `set.seed()`.
@@ -33,21 +41,13 @@ Set the seed and generate 5 numbers.
 
 ```{r}
 set.seed(16)
-rnorm(5)
+rnorm(n = 5, mean = 0, sd = 1)
 ```
 
-Set the seed to the same number and we get the same 5 numbers.
+Reset the seed and we get the same 5 numbers.
 
 ```{r}
 set.seed(16)
-rnorm(5)
-```
-
-### Writing out arguments for clearer code
-
-Using the defaults makes for quick coding but does not make the parameters of the generating distribution clear.
-
-```{r}
 rnorm(n = 5, mean = 0, sd = 1)
 ```
 
@@ -99,14 +99,6 @@ y = rnorm(10, mean = 0, sd = 1)
 plot(y ~ x)
 ```
 
-Storing the vectors in a data.frame can help keeps things organized.
-
-```{r}
-dat = data.frame(x = rnorm(10, mean = 0, sd = 1),
-                 y = rnorm(10, mean = 0, sd = 1) )
-plot(y ~ x, data = dat)
-```
-
 ## `runif()` pulls from the uniform distribution
 
 I like `runif()` to to generate continuous data within a set range.
@@ -125,34 +117,38 @@ runif(n = 5, min = 50, max = 100)
 
 ## Example of using the simulated numbers from `runif()`
 
-I like `runif()` to demonstrate how the magnitude of the explanatory variable affects an estimated coefficient.
+I like `runif()` to demonstrate how the relative size of the explanatory variable affects an estimated coefficient.
 
-First, generate an explanatory variable between 1 and 2.  Set the seed to reproduce the response variable with a different range for `x`.  
+First, generate an explanatory variable between 1 and 2.  Set the seed to reproduce the `x` with a different order of magnitude.  
 
 ```{r}
 set.seed(16)
-dat = data.frame(x = runif(n = 10, min = 1, max = 2),
-                 y = rnorm(n = 10, mean = 0, sd = 1) )
-dat
+x1 = runif(n = 10, min = 1, max = 2)
+y = rnorm(n = 10, mean = 0, sd = 1)
+x1
 ```
 
 We'll use the data in a regression model fit via `lm()`.  
 
 ```{r}
-lm(y ~ x, data = dat)
+lm(y ~ x1)
 ```
 
 Then generate an explanatory variable between 100 and 200.  The new slope coefficient is exactly 1/100th of the original. 
 
 ```{r}
 set.seed(16)
+x2 = runif(n = 10, min = 100, max = 200)
+x2
+```
 
-dat = data.frame(x = runif(10, 100, 200),
-                 y = rnorm(10, 0, 1) )
-lm(y ~ x, data = dat)
+```{r}
+lm(y ~ x2)
 ```
 
 ## Discrete counts with `rpois()`
+
+The Poisson distribuiton is a single parameter distribution, which is called `lambda` in `rpois()`.
 
 ```{r}
 rpois(n = 5, lambda = 2.5)
@@ -283,7 +279,7 @@ data.frame(group = rep(letters[1:2], each = 3),
 Now let's add another categorical variable to this dataset that's *crossed* with the first.  What argument do we use?
 
 ```{r, eval = FALSE}
-rep(LETTERS[3:5], ? = 2)
+factor = rep(LETTERS[3:5], ? = 2)
 ```
 
 We need `times` so that every level of this new variable occurs with every level of `group`.
@@ -335,7 +331,7 @@ data.frame(group = rep(LETTERS[3:4], each = 10),
 
 # Repeatedly simulating data with `replicate()`
 
-The `replicate()` function is a real workhorse when making repeated simulations.
+The `replicate()` function is a real workhorse when making repeated simulations as it is for *repeated evaluation of an expression (which usually involves random number generations)*.
 
 It takes three arguments:
 
@@ -343,7 +339,7 @@ It takes three arguments:
 * `expr`, the expression that should be run repeatedly.  This is often a function.  
 * `simplify`, which controls the type of output the results of `expr` are saved into.  Use `simplify = FALSE` to get vectors saved into a list instead of in an array.  
 
-## Simple example of replicate()
+## Simple example of `replicate()`
 
 Generate 5 values from a standard normal distribution 3 times.
 
@@ -377,7 +373,7 @@ list1
 
 ```{r}
 simlist = replicate(n = 3, 
-          data.frame(group = rep(letters[1:2], each = 3),
+          expr = data.frame(group = rep(letters[1:2], each = 3),
                      response = rnorm(n = 6, mean = 0, sd = 1) ),
           simplify = FALSE)
 ```

@@ -19,11 +19,11 @@ Here's the goal for today:
 
 # Generating random numbers
 
-An easy way to generate numeric data is to pull random numbers from some distribution.  This can be done via the functions for pulling random deviates from some distribution.  These functions always start with `r` (for "random").
+An easy way to generate numeric data is to pull random numbers from some distribution.  This can be done via the functions for generating random deviates.  These functions always start with `r` (for "random").
 
 The basic distributions that I use the most for generating random numbers are the normal (`rnorm()`) and uniform (`runif()`) distributions.  We'll look at those today, plus the Poisson (`rpois()`) distribution for generating discrete counts. 
 
-There are many other distributions available as part of the **stats** package (e.g., binomial, log normal, beta, exponential, Gamma) and, as you can imagine, even more available in add-on packages.  I recently needed to generate data from the Tweedie distribution to test a modeling tool, which I could do via package **tweedie**.  
+There are many other distributions available as part of the **stats** package (e.g., binomial, F, log normal, beta, exponential, Gamma) and, as you can imagine, even more available in add-on packages.  I recently needed to generate data from the Tweedie distribution to test a modeling tool, which I could do via package **tweedie**.  
 
 The `r` functions for a chosen distribution all work basically the same way.  We define how many random numbers we want to generate in the first argument (`n`) and then define the parameters for the distribution we want to draw from.  This is easier to see with practice, so let's get started.
 
@@ -35,47 +35,45 @@ There are three arguments to `rnorm()`.  From the `Usage` section of the documen
 
 > rnorm(n, mean = 0, sd = 1)
 
-The `n` argument is the number of observations we want.  The `mean` and `sd` arguments show what the default values are (note that `sd` is the *standard deviation*, not the variance).
+The `n` argument is the number of observations we want to generate.  The `mean` and `sd` arguments show what the default values are (note that `sd` is the *standard deviation*, not the variance).  Not all `r` functions have defaults like this.
 
-To get 5 random numbers from a $Normal(0, 1)$ (aka the *standard* normal) distribution I can write code like:
+To get 5 random numbers from a $Normal(0, 1)$ (aka the *standard* normal) distribution we can write code like:
 
 ```{r}
 rnorm(5)
 ```
 
-There's a couple things about this code and output to discuss.  
+There are a couple things about this code and the output to discuss.
 
-First, if I were to run this code again I would get different numbers.  To get reproducible random numbers we need to *set the seed*.
+First, the code got me 5 numbers, which is what I wanted.  However, the code itself isn't particularly clear.  What I might refer to as lazy coding on my part can look pretty mysterious to someone reading my code (or to my future self reading my code).  Since I used the default values for `mean` and `sd`, it's not clear exactly what distribution I drew the numbers from.   
+
+### Writing out arguments in for clearer code
+
+Here's clearer code to do the same thing, where I write out the mean and standard deviation arguments explicitly even though I'm using the default values.  It is certainly not necessary to always be this careful, but I don't think I've run into a time when it was bad to have clear code.
+
+```{r}
+rnorm(n = 5, mean = 0, sd = 1)
+```
 
 ### Setting the random seed for reproducible random numbers
 
-If you need to reproduce the random numbers you got so you can generate the exact same numbers you'll need to set the seed via `set.seed()`.
+Second, if we run this code again we'll get different numbers.  To get reproducible random numbers we need to *set the seed* via `set.seed()`.
 
-Making sure someone else will be able to exactly reproduce the results when running the same code can be desirable when teaching and is commonly used making an example dataset for demonstarting a coding issue.  I also often set the seed when I'm working on a repeated simulation and I want to make sure that a function I wrote works correctly.  
+Making sure someone else will be able to exactly reproduce your results when running the same code can be desirable for teaching and is useful when making an example dataset for demonstarting a coding issue.
 
-Otherwise in most simulations we don't actually want to set the seed.
+I also will set the seed when I'm making a function for simulations and I want to make sure it works correctly.  Otherwise in most simulations we don't actually want to set the seed.
 
 If we set the seed, we can reproduce the values we generated.
 
 ```{r}
 set.seed(16)
-rnorm(5)
+rnorm(n = 5, mean = 0, sd = 1)
 ```
 
 If we run the code again, we get the same values.
 
 ```{r}
 set.seed(16)
-rnorm(5)
-```
-
-### Writing out arguments in for clearer code
-
-Second, the code I used got me 5 numbers, which is what I wanted.  However, the code itself isn't particularly clear.  What I would call lazy coding on my part can look pretty mysterious to someone reading my code (or to my future self reading my code).  Since I used the default values for `mean` and `sd`, it's not clear exactly what the parameters of the distribution were.  
-
-Here's clearer code to do the same thing, where I write out the mean and standard deviation arguments explicitly even though I'm using the default values.  It is certainly not necessary to always be this careful, but I don't think it's ever a bad thing to have clear code.
-
-```{r}
 rnorm(n = 5, mean = 0, sd = 1)
 ```
 
@@ -89,7 +87,7 @@ The `sd` argument shows the *standard deviation* of the normal distribution.  So
 rnorm(n = 5, mean = 0, sd = 2)
 ```
 
-I've seen others change the mean and standard deviation to get more specific ranges of variables.
+I've seen others change the mean and standard deviation to create a variable that is within some specific range.
 
 For example, if the mean is large and the standard deviation small in relation to the mean we can generate strictly positive numbers.  (I usually use `runif()` for this, which we'll see below).
 
@@ -101,7 +99,7 @@ rnorm(n = 5, mean = 50, sd = 20)
 
 We can pull random numbers from a normal distribution with distinct parameters if we use a vector for the parameter arguments.  For example, this could be useful for simulating data with different group means but the same variance.  We might want to use something like this if we were making data that we would fit using an ANOVA.
 
-I'll keep the standard deviation at 1 but will draw data from distribution centered at different locations: one at 0, one at 5, and one at 20. I request 10 total draws by changing `n` to 10. 
+I'll keep the standard deviation at 1 but will draw data from three distribution centered at three different locations: one at 0, one at 5, and one at 20. I request 10 total draws by changing `n` to 10. 
 
 Note the repeating pattern: the function iteratively draws one value from each distribution until the total number requested is reached.  This can lead to imbalance in the sample size per distribution.
 
@@ -115,7 +113,7 @@ A vector can also be passed to `sd`.
 rnorm(n = 10, mean = c(0, 5, 20), sd = c(1, 5, 20) )
 ```
 
-But *not* to `n`.  If a vector is passed to `n` then the length of that vector is taken to be the number required (see `Arguments` section of documentation).
+ If a vector is passed to `n`, however, then the length of that vector is taken to be the number required (see `Arguments` section of documentation).
 
 ```{r}
 rnorm(n = c(2, 10, 10), mean = c(0, 5, 20), sd = c(1, 5, 20) )
@@ -123,11 +121,11 @@ rnorm(n = c(2, 10, 10), mean = c(0, 5, 20), sd = c(1, 5, 20) )
 
 ## Example of using the simulated numbers from `rnorm()`
 
-Up to this point we've printed the results of each simulation but we haven't done anything with it.  
+Up to this point we've printed the results of each simulation. In reality we'd want to save our vectors as objects in R to use them for some further task.  
 
-In reality we'd want to save our vectors as objects in R to use them for some further task.  For example, maybe we want to simulate two unrelated variables and then look to see how related they appear to be.  This can be a fun exercise to demonstrate how variables can appear to be related by chance even when we know they are not, especially at small sample sizes.
+For example, maybe we want to simulate two unrelated variables and then look to see how correlated they appear to be.  This can be a fun exercise to demonstrate how variables can appear to be related by chance even when we know they are not, especially at small sample sizes.
 
-Let's generate two quantitative vectors of length 10, which I'll name `x` and `y`, and plot the results.
+Let's generate two quantitative vectors of length 10, which I'll name `x` and `y`, and plot the results.  I'm using the defaults for `mean` and `sd`.
 
 ```{r}
 x = rnorm(10, mean = 0, sd = 1)
@@ -135,22 +133,14 @@ y = rnorm(10, mean = 0, sd = 1)
 plot(y ~ x)
 ```
 
-Depending on the simulation goal, storing the vectors in a data.frame can help keeps things organized.
-
-```{r}
-dat = data.frame(x = rnorm(10, mean = 0, sd = 1),
-                 y = rnorm(10, mean = 0, sd = 1) )
-plot(y ~ x, data = dat)
-```
-
 
 ## `runif()` pulls from the uniform distribution
 
 Pulling random numbers from other distributions is extremely similar to using `rnorm()`, and we'll go through them more quickly.
 
-I've started using `runif()` pretty regularly, especially when I want to generate numbers that are strictly positive but continuous.  The uniform distribution is a continuous distribtuion, with numbers uniformly distributed between some minimum and maximum.
+I've started using `runif()` pretty regularly, especially when I want to easily generate numbers that are strictly positive but continuous.  The uniform distribution is a continuous distribution, with numbers uniformly distributed between some minimum and maximum.
 
-From `Usage` we can see that by default we pull random numbers between 0 and 1.  The first argument, as with all of these `r` functions, is the number of numbers we want to randomly generate:
+From `Usage` we can see that by default we pull random numbers between 0 and 1.  The first argument, as with all of these `r` functions, is the number of deviates we want to randomly generate:
 
 > runif(n, min = 0, max = 1)
 
@@ -168,40 +158,42 @@ runif(n = 5, min = 50, max = 100)
 
 ## Example of using the simulated numbers from `runif()`
 
-I've used `runif()` when I wanted to show the effect of having variables with very different magnitudes on the size of the estimated coefficient in a regression.
+One situation where I've found `runif()` handy is when I wanted to demonstrate the effect of the relative size of the variable values on the size of the estimated coefficient in a regression.  For example, the relative size of a variable measured  in kilometers is smaller than if that variable was converted into meters.
 
-Let's generate some data with the response variable (`y`) pulled from a standard normal distribution and the explanatory variable with values between 1 and 2.  The two variables are unrelated.  You see I'm still writing out my argument names for clarity, but you may get a sense how easy it would be to start cutting corners since it would take less typing.
+Let's generate some data with the response variable (`y`) pulled from a standard normal distribution and the explanatory variable with values between 1 and 2.  The two variables are unrelated.  You see I'm still writing out my argument names for clarity, but you may get a sense how easy it would be to start cutting corners to avoid the extra typing.
 
-Let's set the seed so we can reproduce `y` when we change the range of the explanatory variable.
-
-```{r}
-set.seed(16)
-dat = data.frame(x = runif(n = 10, min = 1, max = 2),
-                 y = rnorm(n = 10, mean = 0, sd = 1) )
-dat
-```
-
-We'll use the data in a regression model fit via `lm()`.  
-
-```{r}
-lm(y ~ x, data = dat)
-```
-
-Now simulate a new dataset with the same `y` but an explanatory variable with values between 100 and 200.  You'll see new slope coefficient is exactly 1/100th of the coefficient above.
+Let's set the seed so we can reproduce the explanatory variable with a different order of magnitude.
 
 ```{r}
 set.seed(16)
+x1 = runif(n = 10, min = 1, max = 2)
+y = rnorm(n = 10, mean = 0, sd = 1)
+x1
+```
 
-dat = data.frame(x = runif(10, 100, 200),
-                 y = rnorm(10, 0, 1) )
-lm(y ~ x, data = dat)
+We'll use the data in a regression model fit via `lm()`.  Take note of the slope, estimated to be about ``-0.07983`.
+
+```{r}
+lm(y ~ x1)
+```
+
+Now simulate a new dataset with the same `y` but an explanatory variable with values between 100 and 200.  You'll see new slope coefficient is exactly 1/100th of the coefficient above, `-0.0007983`.
+
+```{r}
+set.seed(16)
+x2 = runif(n = 10, min = 100, max = 200)
+x2
+```
+
+```{r}
+lm(y ~ x2)
 ```
 
 ## Discrete counts with `rpois()`
 
 Let's look at one last function for generating random numbers, this time for generating discrete integers (including 0) from a Poisson distribution with `rpois()`.
 
-I use `rpois()` for generating counts for generalized linear models.  This can also be used to get an idea of the shape of the Poisson distribution with different means, which can be enlightening when thinking about whether the distribution will be sufficient for analyzing your real count data.
+I use `rpois()` for generating counts for generalized linear models.  I've also found this function useful in gaining a better understanding of the shape of the Poisson distribution with different means.
 
 The Poisson distribution is a single parameter distribution.  The function looks like:
 
@@ -217,7 +209,7 @@ rpois(n = 5, lambda = 2.5)
 
 ## Example of using the simulated numbers from `rpois()`
 
-Let's explore the Poisson distribution a little more, seeing how the distribution looks when changing the mean.  Being able to look at how the Poisson distribution changes with the mean via simulation helped me understand the the distribution better, and become a lot more aware of why it so often does a poor job for ecological count data.
+Let's explore the Poisson distribution a little more, seeing how the distribution looks when changing the mean.  Being able to look at how the Poisson distribution changes with the mean via simulation helped me understand the the distribution better, and helpd me become a lot more aware of why it so often does a poor job for ecological count data.
 
 We'll draw 100 values from a Poisson distribution with a mean of 5.  We'll name this vector `y` and take a look at a summary of those values.
 
@@ -257,17 +249,21 @@ An alternative to the Poisson distribution for discrete integers is the negative
 
 Quantitative variables are great, but in simulations we're often going to need categorical variables, as well.  
 
-Most often in my own work these are some sort of "grouping" or "treatment" variable.  This means I usually need to have repeated observations of each character value.  The `rep()` function is one way to avoid having to manually write out the entire vector manually.  It's for *replicating elements of vectors and lists*.
+In my own work these are usually sort of "grouping" or "treatment" variable.  This means I need to have repeated observations of each character value.  The `rep()` function is one way to avoid having to write out an entire vector manually.  It's for *replicating elements of vectors and lists*.
 
 ## Using `letters` and `LETTERS`
 
-The first argument of `rep()` is the vector to be repeated.  One way that I use to get this vector is through the use of `letters` or `LETTERS`.  These are *built in constants* in R.  `letters` is for the 26 lowercase letters of the Roman alphabet and `LETTERS` for 26 uppercase letters.
+The first argument of `rep()` is the vector to be repeated.  One option is to write out the character vector you want to repeat.  You can also get a simple character vector through the use of `letters` or `LETTERS`.  These are *built in constants* in R.  `letters` is for the 26 lowercase letters of the Roman alphabet and `LETTERS` is for 26 uppercase letters.
 
-Letters can be pulled out via the extract brackets (`[`).  I use these for pure convenience when I need to make a basic categorical vector.  I find it more straightforward to type out the word and brackets than the vector of characters (complete with all those pesky quotes and such).
+Letters can be pulled out via the extract brackets (`[`).  I use these built-in constants for pure convenience when I need to make a basic categorical vector.  I find it more straightforward to type out the word and brackets than the vector of characters (complete with all those pesky quotes and such).
+
+Here's the first two `letters`.
 
 ```{r}
 letters[1:2]
 ```
+
+And the last 17 `LETTERS`.
 
 ```{r}
 LETTERS[10:26]
@@ -277,11 +273,11 @@ LETTERS[10:26]
 
 There are three arguments that help us repeat the values in the vector in `rep()` with different patterns: `each`, `times`, and `length.out`.  These can be used individually or in combination.
 
-With `each` we repeat each unique character in the vector some number of times.  The replication is done "elementwise" so the repeats of each unique characters are all in a row.  
+With `each` we repeat each unique character in the vector the defined number of times.  The replication is done "elementwise", so the repeats of each unique character are all in a row.  
 
 Let's repeat two characters three times each.  The resulting vector is 6 observations long.  
 
-This is how I might make a grouping variable for simulating data for a two-sample analysis.  
+This is an example of how I might make a grouping variable for simulating data to be used in a two-sample analysis.  
 
 ```{r}
 rep(letters[1:2], each = 3)
@@ -289,9 +285,9 @@ rep(letters[1:2], each = 3)
 
 ## Repeat a whole vector with the `times` argument
 
-Another way to repeat a vector is to repeat the whole vector rather than repeat it elementwise like we did with `each`. That's what the `times` argument is for.
+The `times` argument can be used when we want to repeat the whole vector rather than repeat it elementwise like we did above with `each`. 
 
-We'll make a two-group variable again, but this time we'll change the pattern of the values in the variable.
+We'll make a two-group variable again, but this time we'll change the repeating pattern of the values in the variable.
 
 ```{r}
 rep(letters[1:2], times = 3)
@@ -307,11 +303,13 @@ Let's repeat the first element twice and the second four times.
 rep(letters[1:2], times = c(2, 4) )
 ```
 
-## Using `length.out` argument
+## Using the `length.out` argument to define the vector length
 
 The `length.out` argument has `rep()` repeat the whole vector much like `times` does.  However, it repeats only until the defined length is reached.  Using `length.out` is another way to get unbalanced groups.  
 
-Rather than defining the number of repeats like we did with `each` and `times` we define how long the final variable should be.  Here's I'll make a two-group variable of length 5.  This means the second group will have one less value than the first.
+Rather than defining the number of repeats like we did with `each` and `times` we define the length of the output vector.  
+
+Here we'll make a two-group variable of length 5.  This means the second group will have one less value than the first.
 
 ```{r}
 rep(letters[1:2], length.out = 5)
@@ -319,7 +317,7 @@ rep(letters[1:2], length.out = 5)
 
 ## Combining `each` with `times`
 
-As your simulation situation get more complicated, you may need more complicated patterns for your categorical variable.  The `each` argument can be combined with `times` to first repeat each value elementwise (via `each`) and then repeat that pattern (via `times`).
+As your simulation situation get more complicated, you may need more complicated patterns for your categorical variable.  The `each` argument can be combined with `times` to first repeat each value elementwise (via `each`) and then repeat that whole pattern (via `times`).
 
 When using `times` this way it will only take a single value and not a vector.
 
@@ -331,7 +329,7 @@ rep(letters[1:2], each = 2, times = 3)
 
 ## Combining `each` with `length.out`
 
-Similarly we can use `each` with `length.out`.  This can lead to imbalance.  
+Similarly we can use `each` with `length.out`.  This can lead to some imbalance.  
 
 Here we'll repeat the two values twice each but with a total final vector length of 7.
 
@@ -343,13 +341,13 @@ Note you can't use `length.out` and `times` together (if you try, `length.out` w
 
 # Creating datasets with quantiative and categorical variables
 
-We now have some tools for creating quantitative data as well as categorical.  Which means we can make a dataset!  We'll create several simple ones to get the idea.
+We now have some tools for creating quantitative data as well as categorical.  Which means it's time to make some datasets!  We'll create several simple ones to get the idea.
 
 ## Simulate data with no differences among two groups
 
-Let's start by simulating data that we would use in a simple two-sample analysis with no difference between groups.  We'll make a total of 6 observations, three for each group.
+Let's start by simulating data that we would use in a simple two-sample analysis with no difference between groups.  We'll make a total of 6 observations, three in each group.
 
-We'll be using the tools we revied above but will now name the output and combine them into a data.frame.  This last step isn't always necessary, but does help keep things organized in certain types of simulations.
+We'll be using the tools we reviewed above but will now name the output and combine them into a data.frame.  This last step isn't always necessary, but does help keep things organized in certain types of simulations.
 
 First we'll make separate vectors for the continuous and categorical data and then bind them together via `data.frame()`.  
 
@@ -373,9 +371,17 @@ data.frame(group = rep(letters[1:2], each = 3),
 
 Now let's add another categorical variable to this dataset.  
 
-Say we are in a situation involving two factors, not one.  Each observation has a value of `group` and a value of second factor we'll call `factor`.  That factor will take on the values "C", "D", and "E".
+Say we are in a situation involving two factors, not one.  We have two observations for every combination of the two factors (i.e., the two factors are *crossed).    
 
-This means we need to repeat the variable with a different pattern than `group` so every combination of `group` and `factor` is present in the dataset.
+The second factor, which we'll call `factor`, will take on the values "C", "D", and "E".  We need to repeat the variable with a specific pattern so every combination of `group` and `factor` is present in the dataset and has two observations.
+
+What argument do we use in `rep()`?
+
+```{r, eval = FALSE}
+factor = rep(LETTERS[3:5], ? = 2)
+```
+
+This is a job for the `times` argument, to repeat the whole vector two times.
 
 ```{r}
 data.frame(group = rep(letters[1:2], each = 3),
@@ -385,13 +391,19 @@ data.frame(group = rep(letters[1:2], each = 3),
 
 ## Simulate data with a difference among groups
 
-The dataset above is one with "no difference" among groups.  What if the means were different between groups?  Let's make two groups of three observations where the mean of one group is 5 and the other 10.  The two groups have a shared variance (and so stanard deviation) of 1.
+The dataset above is one with "no difference" among groups.  What if the means were different between groups?  Let's make two groups of three observations where the mean of one group is 5 and the other 10.  The two groups have a shared variance (and so standard deviation) of 1.
 
 Remembering how `rnorm()` works with a vector of means is key here.  The function draws iteratively from each distribution.  
 
 ```{r}
 response = rnorm(n = 6, mean = c(5, 10), sd = 1)
 response
+```
+
+How do we get the `group` pattern correct?
+
+```{r, eval = FALSE}
+group = rep(letters[1:2], ? = 3)
 ```
 
 To get the groups in the correct order we need to use `times` in `rep()`.
@@ -410,11 +422,11 @@ data.frame(group,
 
 ## Multiple quantitative variables with groups
 
-For our last dataset let's make two unrelated quantitative variables, one between 10 and 15 and one between 100 and 150. We also have two groups, with 10 observations of each quantitative variable in each group.
+For our last dataset let's make two unrelated quantitative variables, one between 10 and 15 and one between 100 and 150. We also have two groups, with 10 observations in each group.
 
 I've found that getting the numbers correct when working with simulations with both quantitative and categorical variables takes some practice.  
 
-Here we use `each = 10` to repeat each element of the vector 10 times to get a total of 20 observations.  We are drawing values of the quantitative values overall, though, not by group, so use `n = 20` in `runif()`.
+Here we use `each = 10` to repeat each element of the vector 10 times to get a total of 20 observations.  We are drawing values of the quantitative values overall, though, not by group, so we need to use `n = 20` in `runif()`.
 
 ```{r}
 data.frame(group = rep(LETTERS[3:4], each = 10),
@@ -423,7 +435,7 @@ data.frame(group = rep(LETTERS[3:4], each = 10),
 ```
 
 
-# Repeatedly simulating data with `replicate()`
+# Repeatedly simulate data with `replicate()`
 
 The `replicate()` function is a real workhorse when making repeated simulations.  It is a member of the *apply* family in R, and is specifically made (per the documentation) for the *repeated evaluation of an expression (which usually involves random number generations)*.  
 
@@ -483,7 +495,7 @@ I'll replicate things 3 times again to easily see the output.  I still use `simp
 
 ```{r}
 simlist = replicate(n = 3, 
-          data.frame(group = rep(letters[1:2], each = 3),
+          expr = data.frame(group = rep(letters[1:2], each = 3),
                      response = rnorm(n = 6, mean = 0, sd = 1) ),
           simplify = FALSE)
 ```
