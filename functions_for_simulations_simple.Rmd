@@ -71,19 +71,13 @@ rnorm(n = 5, mean = 50, sd = 20)
 
 Both `mean` and `sd` will take vectors of values.
 
-Maybe we want different means with a shared standard deviation.
+Let's pull from distributions with different means but the same standard deviation.
 
 ```{r}
 rnorm(n = 10, mean = c(0, 5, 20), sd = 1)
 ```
 
-Or different means with different standard deviations.
-
-```{r}
-rnorm(n = 10, mean = c(0, 5, 20), sd = c(1, 5, 20) )
-```
-
-Notice that `n` does not take values in a vector.  Instead it uses the length of the vector to indicate the number of values desired.  
+We could pass a vector to `sd`, as well, but not `n`.  The `n` argument uses the length of the vector to indicate the number of values desired.  
 
 ```{r}
 rnorm(n = c(2, 10, 10), mean = c(0, 5, 20), sd = c(1, 5, 20) )
@@ -91,7 +85,7 @@ rnorm(n = c(2, 10, 10), mean = c(0, 5, 20), sd = c(1, 5, 20) )
 
 ## Example of using the simulated numbers from `rnorm()`
 
-Exploring how related to unrelated vectors look.
+Exploring how related two unrelated vectors can appear.
 
 ```{r}
 x = rnorm(n = 10, mean = 0, sd = 1)
@@ -119,13 +113,12 @@ runif(n = 5, min = 50, max = 100)
 
 I like `runif()` to demonstrate how the relative size of the explanatory variable affects an estimated coefficient.
 
-First, generate an explanatory variable between 1 and 2.  Set the seed to reproduce the `x` with a different order of magnitude.  
+First, generate an explanatory variable between 1 and 2.    
 
 ```{r}
-set.seed(16)
-x1 = runif(n = 10, min = 1, max = 2)
-y = rnorm(n = 10, mean = 0, sd = 1)
-x1
+x1 = runif(n = 100, min = 1, max = 2)
+y = rnorm(n = 100, mean = 0, sd = 1)
+head(x1)
 ```
 
 We'll use the data in a regression model fit via `lm()`.  
@@ -134,59 +127,15 @@ We'll use the data in a regression model fit via `lm()`.
 lm(y ~ x1)
 ```
 
-Then generate an explanatory variable between 100 and 200.  The new slope coefficient is exactly 1/100th of the original. 
+Then generate an explanatory variable between 100 and 200.  The new slope coefficient is much smaller. 
 
 ```{r}
-set.seed(16)
-x2 = runif(n = 10, min = 100, max = 200)
-x2
+x2 = runif(n = 100, min = 100, max = 200)
+head(x2)
 ```
 
 ```{r}
 lm(y ~ x2)
-```
-
-## Discrete counts with `rpois()`
-
-The Poisson distribution is a single parameter distribution, which is called `lambda` in `rpois()`.
-
-```{r}
-rpois(n = 5, lambda = 2.5)
-```
-
-## Example of using the simulated numbers from `rpois()`
-
-Simulated values allow us to explore Poisson distributions with different means.
-
-We'll draw 100 values from a Poisson distribution with a mean of 5.  
-
-```{r}
-y = rpois(100, lambda = 5)
-```
-
-The vector of values we simulated fall between 1 and 14.
-
-```{r}
-summary(y)
-```
-
-There is mild right-skew when we draw a histogram of the values.
-
-```{r}
-hist(y)
-```
-
-Now do the same thing for a Poisson distribution with a mean of 100.
-
-```{r}
-y = rpois(100, lambda = 100)
-summary(y)
-```
-
-The distribution is now quite symmetric.
-
-```{r}
-hist(y)
 ```
 
 # Generate character vectors with `rep()`
@@ -219,8 +168,18 @@ rep(letters[1:2], each = 3)
 
 ## Repeat a whole vector with the `times` argument
 
+Repeating is different with `times`.
+
 ```{r}
 rep(letters[1:2], times = 3)
+```
+
+## Set the output vector length with the `length.out` argument
+
+Using `length.out` is similar to `times` but the groups can be imbalanced.
+
+```{r}
+rep(letters[1:2], length.out = 5)
 ```
 
 ## Repeat each element a different number of `times`
@@ -229,14 +188,6 @@ We can get unbalanced data with `times` if we use a vector for the argument.
 
 ```{r}
 rep(letters[1:2], times = c(2, 4) )
-```
-
-## Using `length.out` argument
-
-This defines the desired length of the output.
-
-```{r}
-rep(letters[1:2], length.out = 5)
 ```
 
 ## Combining `each` with `times`
@@ -285,13 +236,11 @@ The new factor will have three values.
 LETTERS[3:5]
 ```
 
-
 Remember the `group` factor is repeated elementwise.
 
 ```{r}
 rep(letters[1:2], each = 3)
 ```
-
 
 So what argument do we use for the new variable?
 
@@ -308,6 +257,14 @@ You can see that every level of this new variable occurs with every level of `gr
 ```{r}
 data.frame(group = rep(letters[1:2], each = 3),
            factor = rep(LETTERS[3:5], times = 2),
+           response = rnorm(n = 6, mean = 0, sd = 1) )
+```
+
+What if we tried to use `each` instead?
+
+```{r}
+data.frame(group = rep(letters[1:2], each = 3),
+           factor = rep(LETTERS[3:5], each = 2),
            response = rnorm(n = 6, mean = 0, sd = 1) )
 ```
 
@@ -345,29 +302,9 @@ data.frame(group,
             response)
 ```
 
-## Multiple quantitative variables with groups
-
-Getting the number of repeats of each categorical value correct to match the number of draws needed to make a quantitative variable of the same length is key.
-
-How many random draws do we need for the quantitative variable?
-
-```{r, eval = FALSE}
-data.frame(group = rep(LETTERS[3:4], each = 10),
-           x = runif(n = ?, min = 10, max = 15),
-           y = runif(n = ?, min = 100, max = 150))
-```
-
-What happens if we get this wrong?
-
-```{r}
-data.frame(group = rep(LETTERS[3:4], each = 10),
-           x = runif(n = 15, min = 10, max = 15),
-           y = runif(n = 15, min = 100, max = 150))
-```
-
 # Repeatedly simulating data with `replicate()`
 
-The `replicate()` function is a real workhorse when making repeated simulations as it is for *repeated evaluation of an expression (which usually involves random number generations)*.
+The `replicate()` function is a real workhorse when making repeated simulations as it is for *repeated evaluation of an expression (which will usually involves random number generation)*.
 
 It takes three arguments:
 
@@ -390,7 +327,8 @@ Without `simplify = FALSE` we get a matrix.
 
 ```{r}
 set.seed(16)
-replicate(n = 3, expr = rnorm(5, 0, 1) )
+replicate(n = 3, 
+          expr = rnorm(n = 5, mean = 0, sd = 1) )
 ```
 
 ## An equivalent `for()` loop example
@@ -429,4 +367,6 @@ simlist[[1]]
 
 # What's the next step?
 
-By saving our generated variables or data.frames into a list we've made it so we can loop via list looping functions like `lapply()` or `purrr::map()`.
+By saving our generated variables or data.frames into a list we've made it so we can loop via list looping functions like `lapply()` or `purrr::map()`.  
+
+Tou can see a few examples of `replicate()` followed by `map()` in my blog post [A closer look at replicate() and purrr::map() for simulations](https://aosmith.rbind.io/2018/06/05/a-closer-look-at-replicate-and-purrr/).

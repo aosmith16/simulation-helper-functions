@@ -164,27 +164,23 @@ One situation where I've found `runif()` handy is when I wanted to demonstrate t
 
 Let's generate some data with the response variable (`y`) pulled from a standard normal distribution and the explanatory variable with values between 1 and 2.  The two variables are unrelated.  You see I'm still writing out my argument names for clarity, but you may get a sense how easy it would be to start cutting corners to avoid the extra typing.
 
-Let's set the seed so we can reproduce the explanatory variable with a different order of magnitude.
-
 ```{r}
-set.seed(16)
-x1 = runif(n = 10, min = 1, max = 2)
-y = rnorm(n = 10, mean = 0, sd = 1)
-x1
+x1 = runif(n = 100, min = 1, max = 2)
+y = rnorm(n = 100, mean = 0, sd = 1)
+head(x1)
 ```
 
-We'll use the data in a regression model fit via `lm()`.  Take note of the slope, estimated to be about ``-0.07983`.
+We'll use the data in a regression model fit via `lm()`.  Take note of the slope.
 
 ```{r}
 lm(y ~ x1)
 ```
 
-Now simulate a new dataset with the same `y` but an explanatory variable with values between 100 and 200.  Since I set the seed you'll see new slope coefficient is exactly 1/100th of the coefficient above, `-0.0007983`.
+Now simulate a new dataset with the same `y` but an explanatory variable with values between 100 and 200.  Since `x2` has values 100x larger than `x`, the new slope coefficient is much smaller in absolute value.
 
 ```{r}
-set.seed(16)
-x2 = runif(n = 10, min = 100, max = 200)
-x2
+x2 = runif(n = 100, min = 100, max = 200)
+head(x2)
 ```
 
 ```{r}
@@ -295,17 +291,7 @@ We'll make a two-group variable again, but this time we'll change the repeating 
 rep(letters[1:2], times = 3)
 ```
 
-## Repeat each element a different number of `times`
-
-We can use `times` with a vector instead of an integer value to repeat each element of the character vector a different number of times.  This is one way to simulate unbalanced groups.  Unlike our first use of `times`, using `times` with a vector repeats each element like `each` does.
-
-Let's repeat the first element twice and the second four times.
-
-```{r}
-rep(letters[1:2], times = c(2, 4) )
-```
-
-## Using the `length.out` argument to define the vector length
+## Set the output vector length with the `length.out` argument
 
 The `length.out` argument has `rep()` repeat the whole vector.  However, it repeats the vector only until the defined length is reached.  Using `length.out` is another way to get unbalanced groups.  
 
@@ -315,6 +301,16 @@ Here we'll make a two-group variable of length 5.  This means the second group w
 
 ```{r}
 rep(letters[1:2], length.out = 5)
+```
+
+## Repeat each element a different number of `times`
+
+Unlike `each` and `length.out`, we can use `times` with a vector of values.  This allows us to repeat each element of the character vector a different number of times.  This is one way to simulate unbalanced groups.  Using `times` with a vector repeats each element like `each` does, which can make it harder to remember which argument does what.
+
+Let's repeat the first element twice and the second four times.
+
+```{r}
+rep(letters[1:2], times = c(2, 4) )
 ```
 
 ## Combining `each` with `times`
