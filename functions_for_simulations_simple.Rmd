@@ -94,8 +94,8 @@ rnorm(n = c(2, 10, 10), mean = c(0, 5, 20), sd = c(1, 5, 20) )
 Exploring how related to unrelated vectors look.
 
 ```{r}
-x = rnorm(10, mean = 0, sd = 1)
-y = rnorm(10, mean = 0, sd = 1)
+x = rnorm(n = 10, mean = 0, sd = 1)
+y = rnorm(n = 10, mean = 0, sd = 1)
 plot(y ~ x)
 ```
 
@@ -148,7 +148,7 @@ lm(y ~ x2)
 
 ## Discrete counts with `rpois()`
 
-The Poisson distribuiton is a single parameter distribution, which is called `lambda` in `rpois()`.
+The Poisson distribution is a single parameter distribution, which is called `lambda` in `rpois()`.
 
 ```{r}
 rpois(n = 5, lambda = 2.5)
@@ -246,6 +246,7 @@ When using `times` this way it will only take a single value and not a vector.
 ```{r}
 rep(letters[1:2], each = 2, times = 3)
 ```
+
 ## Combining `each` with `length.out`
 
 This is another way to impart imbalance.
@@ -276,13 +277,33 @@ data.frame(group = rep(letters[1:2], each = 3),
            response = rnorm(n = 6, mean = 0, sd = 1) )
 ```
 
-Now let's add another categorical variable to this dataset that's *crossed* with the first.  What argument do we use?
+Now let's add another categorical variable to this dataset that's *crossed* with the first.  
 
-```{r, eval = FALSE}
-factor = rep(LETTERS[3:5], ? = 2)
+The new factor will have three values.  
+
+```{r}
+LETTERS[3:5]
 ```
 
-We need `times` so that every level of this new variable occurs with every level of `group`.
+
+Remember the `group` factor is repeated elementwise.
+
+```{r}
+rep(letters[1:2], each = 3)
+```
+
+
+So what argument do we use for the new variable?
+
+```{r, eval = FALSE}
+rep(LETTERS[3:5], ? = 2)
+```
+
+
+
+To repeat the whole vector twice we'll need to use the `times` argument.
+
+You can see that every level of this new variable occurs with every level of `group`.
 
 ```{r}
 data.frame(group = rep(letters[1:2], each = 3),
@@ -290,7 +311,7 @@ data.frame(group = rep(letters[1:2], each = 3),
            response = rnorm(n = 6, mean = 0, sd = 1) )
 ```
 
-## Simulate data with a differencein means among two groups
+## Simulate data with a difference in means among two groups
 
 We can use a vector for `mean` in `rnorm()` for this.
 
@@ -299,11 +320,16 @@ response = rnorm(n = 6, mean = c(5, 10), sd = 1)
 response
 ```
 
+
 How do we get the `group` pattern correct?
 
 ```{r, eval = FALSE}
 group = rep(letters[1:2], ? = 3)
 ```
+
+
+
+
 
 We need `times` again to repeat the whole vector three times to match the output of `rnorm()`.
 
@@ -321,12 +347,22 @@ data.frame(group,
 
 ## Multiple quantitative variables with groups
 
-Getting the number of repeats of each categorical value correct to match the number of draws from the distribution is key.
+Getting the number of repeats of each categorical value correct to match the number of draws needed to make a quantitative variable of the same length is key.
+
+How many random draws do we need for the quantitative variable?
+
+```{r, eval = FALSE}
+data.frame(group = rep(LETTERS[3:4], each = 10),
+           x = runif(n = ?, min = 10, max = 15),
+           y = runif(n = ?, min = 100, max = 150))
+```
+
+What happens if we get this wrong?
 
 ```{r}
 data.frame(group = rep(LETTERS[3:4], each = 10),
-           x = runif(n = 20, min = 10, max = 15),
-           y = runif(n = 20, min = 100, max = 150))
+           x = runif(n = 15, min = 10, max = 15),
+           y = runif(n = 15, min = 100, max = 150))
 ```
 
 # Repeatedly simulating data with `replicate()`
@@ -345,7 +381,8 @@ Generate 5 values from a standard normal distribution 3 times.
 
 ```{r}
 set.seed(16)
-replicate(n = 3, expr = rnorm(n = 5, mean = 0, sd = 1), 
+replicate(n = 3, 
+          expr = rnorm(n = 5, mean = 0, sd = 1), 
           simplify = FALSE )
 ```
 
@@ -356,7 +393,7 @@ set.seed(16)
 replicate(n = 3, expr = rnorm(5, 0, 1) )
 ```
 
-## An equivalent for() loop example
+## An equivalent `for()` loop example
 
 The same thing can be done with a `for()` loop, which I've found can be easier code to follow for R beginners.
 
