@@ -242,12 +242,12 @@ rep(letters[1:2], each = 3)
 So what argument do we use for the new variable?
 
 ```{r, eval = FALSE}
-rep(LETTERS[3:5], ? = 2)
+rep(LETTERS[3:5], ?)
 ```
 
 
 
-To repeat the whole vector twice we'll need to use the `times` argument.
+To repeat the whole vector twice can use the `times` argument or `length.out = 6`.
 
 You can see that every level of this new variable occurs with every level of `group`.
 
@@ -278,17 +278,17 @@ response
 How do we get the `group` pattern correct?
 
 ```{r, eval = FALSE}
-group = rep(letters[1:2], ? = 3)
+group = rep(letters[1:2], ?)
 ```
 
 
 
 
 
-We need `times` again to repeat the whole vector three times to match the output of `rnorm()`.
+We need `times` or `length.out` to repeat the whole vector to match the output of `rnorm()`.
 
 ```{r}
-group = rep(letters[1:2], times = 3)
+group = rep(letters[1:2], length.out = 6)
 group
 ```
 
@@ -301,13 +301,13 @@ data.frame(group,
 
 # Repeatedly simulating data with `replicate()`
 
-The `replicate()` function is a real workhorse when making repeated simulations as it is for *repeated evaluation of an expression (which will usually involves random number generation)*.
+The `replicate()` function is a real workhorse when making repeated simulations as it is for *repeated evaluation of an expression (which will usually involve random number generation)*.
 
 It takes three arguments:
 
 * `n`, which is the number of replications to perform.  This is to set the number of repeated runs we want.  
 * `expr`, the expression that should be run repeatedly.  This is often a function.  
-* `simplify`, which controls the type of output the results of `expr` are saved into.  Use `simplify = FALSE` to get vectors saved into a list instead of in an array.  
+* `simplify`, which controls the type of output the results of `expr` are saved into.  Use `simplify = FALSE` to get output saved into a list instead of in an array.  
 
 ## Simple example of `replicate()`
 
