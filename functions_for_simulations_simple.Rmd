@@ -7,9 +7,9 @@ output: github_document
 
 # Overview
 
-Here's the goal for today:
+Here's what we'll talk about today:
 
-1. Simulate quantitative variables with `rnorm()`, `runif()` and `rpois()`
+1. Simulate quantitative variables with `rnorm()` and `runif()`
 2. Generate character variables that represent groups via `rep()`.  
 3. Use `replicate()` to repeat the data simulation process many times
 
@@ -71,7 +71,7 @@ rnorm(n = 5, mean = 50, sd = 20)
 
 Both `mean` and `sd` will take vectors of values.
 
-Let's pull from distributions with different means but the same standard deviation.
+Let's pull 10 values from distributions with different means but the same standard deviation.
 
 ```{r}
 rnorm(n = 10, mean = c(0, 5, 20), sd = 1)
@@ -111,31 +111,28 @@ runif(n = 5, min = 50, max = 100)
 
 ## Example of using the simulated numbers from `runif()`
 
-I like `runif()` to demonstrate how the relative size of the explanatory variable affects an estimated coefficient.
+I like `runif()` to demonstrate how the relative size of the explanatory variable affects the estimated coefficient.
 
-First, generate an explanatory variable between 1 and 2.    
+Make a response variable via `rnorm()` and then generate an explanatory variable between 1 and 2.    
 
 ```{r}
-x1 = runif(n = 100, min = 1, max = 2)
+set.seed(16)
 y = rnorm(n = 100, mean = 0, sd = 1)
+x1 = runif(n = 100, min = 1, max = 2)
 head(x1)
 ```
 
-We'll use the data in a regression model fit via `lm()`.  
+Then make an explanatory variable between 200 and 300.
 
 ```{r}
-lm(y ~ x1)
-```
-
-Then generate an explanatory variable between 100 and 200.  The new slope coefficient is much smaller. 
-
-```{r}
-x2 = runif(n = 100, min = 100, max = 200)
+x2 = runif(n = 100, min = 200, max = 300)
 head(x2)
 ```
 
+We'll use the data in a regression model fit via `lm()`, making note of the coefficients.
+
 ```{r}
-lm(y ~ x2)
+lm(y ~ x1 + x2)
 ```
 
 # Generate character vectors with `rep()`
@@ -369,4 +366,4 @@ simlist[[1]]
 
 By saving our generated variables or data.frames into a list we've made it so we can loop via list looping functions like `lapply()` or `purrr::map()`.  
 
-Tou can see a few examples of `replicate()` followed by `map()` in my blog post [A closer look at replicate() and purrr::map() for simulations](https://aosmith.rbind.io/2018/06/05/a-closer-look-at-replicate-and-purrr/).
+You can see a few examples of `replicate()` followed by `map()` in my blog post [A closer look at replicate() and purrr::map() for simulations](https://aosmith.rbind.io/2018/06/05/a-closer-look-at-replicate-and-purrr/).

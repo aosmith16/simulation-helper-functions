@@ -7,6 +7,18 @@ output:
        toc: TRUE
 ---
 
+```{r setup, echo = FALSE}
+knitr::opts_chunk$set(comment = "")
+library(knitr)
+local({
+  hook_error = knit_hooks$get('error')
+  knit_hooks$set(error = function(x, options) {
+    x = strwrap(x)
+    hook_error(x, options)
+  })
+})
+```
+
 # Overview
 
 There are many reasons we might want to simulate data in R, and I find being able to simulate data to be incredible useful in my day-to-day work.  But how does someone get started simulating data?  
@@ -162,29 +174,28 @@ runif(n = 5, min = 50, max = 100)
 
 One situation where I've found `runif()` handy is when I wanted to demonstrate the effect of the relative size of the variable values on the size of the estimated coefficient in a regression.  For example, the relative size of a variable measured in kilometers is smaller than if that variable was converted into meters.
 
-Let's generate some data with the response variable (`y`) pulled from a standard normal distribution and the explanatory variable with values between 1 and 2.  The two variables are unrelated.  You see I'm still writing out my argument names for clarity, but you may get a sense how easy it would be to start cutting corners to avoid the extra typing.
+Let's generate some data with the response variable (`y`) pulled from a standard normal distribution and then an explanatory variable with values between 1 and 2.  The two variables are unrelated.  
+
+You see I'm still writing out my argument names for clarity, but you may get a sense how easy it would be to start cutting corners to avoid the extra typing.
 
 ```{r}
-x1 = runif(n = 100, min = 1, max = 2)
+set.seed(16)
 y = rnorm(n = 100, mean = 0, sd = 1)
+x1 = runif(n = 100, min = 1, max = 2)
 head(x1)
 ```
 
-We'll use the data in a regression model fit via `lm()`.  Take note of the slope.
+Now simulate a second explanatory variable with values between 200 and 300.  This variable is also unrelated to the other two.
 
 ```{r}
-lm(y ~ x1)
-```
-
-Now simulate a new dataset with the same `y` but an explanatory variable with values between 100 and 200.  Since `x2` has values 100x larger than `x`, the new slope coefficient is much smaller in absolute value.
-
-```{r}
-x2 = runif(n = 100, min = 100, max = 200)
+x2 = runif(n = 100, min = 200, max = 300)
 head(x2)
 ```
 
+We can fit a multiple regression linear model via `lm()`.  The coefficient for the second variable, with a larger relative size, is generally going to be smaller than the first since the change in `y` for a "1-unit increase" in `x` depends on the units of `x`.
+
 ```{r}
-lm(y ~ x2)
+lm(y ~ x1 + x2)
 ```
 
 ## Discrete counts with `rpois()`
@@ -468,13 +479,15 @@ data.frame(group = rep(LETTERS[3:4], each = 10),
 
 What happens if we get this wrong?  If we're lucky we get an error.
 
-```{r}
+```{r, error = TRUE}
 data.frame(group = rep(LETTERS[3:4], each = 10),
            x = runif(n = 15, min = 10, max = 15),
            y = runif(n = 15, min = 100, max = 150))
 ```
 
-But if we get things wrong and the number we use goes into the number we need evenly, R will *recycle* the vector to the end of the `data.frame()`.  This is a hard mistake to catch.
+But if we get things wrong and the number we use goes into the number we need evenly, R will *recycle* the vector to the end of the `data.frame()`.  
+
+This is a hard mistake to catch.  If you look carefully through the output below you can see that the continuous variables start to repeat on line 10.
 
 ```{r}
 data.frame(group = rep(LETTERS[3:4], each = 10),
