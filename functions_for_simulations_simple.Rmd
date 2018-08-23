@@ -343,6 +343,15 @@ list1
 
 ## Using `replicate()` to repeatedly make a dataset
 
+Let's replicate the "two groups with no difference in means" dataset from earlier.
+
+```{r}
+data.frame(group = rep(letters[1:2], each = 3),
+           response = rnorm(n = 6, mean = 0, sd = 1) )
+```
+
+This can be put as the `expr` in `replicate()`.
+
 ```{r}
 simlist = replicate(n = 3, 
           expr = data.frame(group = rep(letters[1:2], each = 3),
