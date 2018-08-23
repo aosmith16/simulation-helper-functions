@@ -399,7 +399,7 @@ rep(letters[1:2], each = 3)
 We need to repeat the three values twice.  But what argument do we use in `rep()` to do so?
 
 ```{r, eval = FALSE}
-rep(LETTERS[3:5], ? = 2)
+rep(LETTERS[3:5], ?)
 ```
 
 Does `each` work?
@@ -410,7 +410,9 @@ rep(LETTERS[3:5], each = 2)
 
 No, if we use `each` then each element is repeated twice and some of the combinations of `group` and `factor` are missing.
 
-This is a job for the `times` argument, so the whole vector repeats two times.  In the result below we can see every combination of the two factors is present once.
+This is a job for the `times` or `length.out` arguments, so the whole vector is repeated.  We can repeat the whole vector twice using `times`, or use `length.out = 6`.  I do the former.  
+
+In the result below we can see every combination of the two factors is present once.
 
 ```{r}
 data.frame(group = rep(letters[1:2], each = 3),
@@ -432,15 +434,15 @@ response
 How do we get the `group` pattern correct?
 
 ```{r, eval = FALSE}
-group = rep(letters[1:2], ? = 3)
+group = rep(letters[1:2], ?)
 ```
 
-We need to repeat the whole vector twice instead of elementwise.
+We need to repeat the whole vector three times instead of elementwise.
 
-To get the groups in the correct order we need to use `times` in `rep()`.
+To get the groups in the correct order we need to use `times` or `length.out` in `rep()`.  With `length.out` we define the output length of the vector, which is 6.  Alternatively we could use `times = 3` to repeat the whole vector 3 times.
 
 ```{r}
-group = rep(letters[1:2], times = 3)
+group = rep(letters[1:2], length.out = 6)
 group
 ```
 
@@ -505,7 +507,7 @@ The `replicate()` function takes three arguments:
 
 * `n`, which is the number of replications to perform.  This is to set the number of repeated runs we want.  
 * `expr`, the expression that should be run repeatedly.  This is often a function.  
-* `simplify`, which controls the type of output the results of `expr` are saved into.  Use `simplify = FALSE` to get vectors saved into a list instead of in an array.  
+* `simplify`, which controls the type of output the results of `expr` are saved into.  Use `simplify = FALSE` to get output saved into a list instead of in an array.  
 
 ## Simple example of replicate()
 
