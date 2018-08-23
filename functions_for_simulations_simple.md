@@ -26,11 +26,7 @@ Pull 5 random numbers from a standard normal distribution.
 rnorm(5)
 ```
 
-<<<<<<< HEAD
-    ## [1] -0.02778368  0.79159119  0.41862278  0.15074969 -0.25006817
-=======
-    ## [1] -1.8959413  0.4220658 -1.1759058 -0.6294865 -0.7184541
->>>>>>> master
+    ## [1] -0.07421413  1.79579756  0.76461576 -0.16386461  0.71845964
 
 ### Writing out arguments for clearer code
 
@@ -41,11 +37,7 @@ parameters of the generating distribution clear.
 rnorm(n = 5, mean = 0, sd = 1)
 ```
 
-<<<<<<< HEAD
-    ## [1] -0.06359233 -0.29952699  0.80254129  0.09682013 -0.82419265
-=======
-    ## [1] -0.4440400  0.8668020  0.2810383 -1.6856974  1.6429932
->>>>>>> master
+    ## [1]  0.7999514  1.2629863  0.3792429  0.3808300 -0.5720355
 
 ### Setting the random seed for reproducible random numbers
 
@@ -343,18 +335,11 @@ rep(letters[1:2], each = 3)
 So what argument do we use for the new variable?
 
 ``` r
-<<<<<<< HEAD
-rep(LETTERS[3:5], ? = 2)
-```
-
-To repeat the whole vector twice we’ll need to use the `times` argument.
-=======
 rep(LETTERS[3:5], ?)
 ```
 
 To repeat the whole vector twice can use the `times` argument or
 `length.out = 6`.
->>>>>>> master
 
 You can see that every level of this new variable occurs with every
 level of `group`.
@@ -403,16 +388,6 @@ response
 How do we get the `group` pattern correct?
 
 ``` r
-<<<<<<< HEAD
-group = rep(letters[1:2], ? = 3)
-```
-
-We need `times` again to repeat the whole vector three times to match
-the output of `rnorm()`.
-
-``` r
-group = rep(letters[1:2], times = 3)
-=======
 group = rep(letters[1:2], ?)
 ```
 
@@ -421,7 +396,6 @@ output of `rnorm()`.
 
 ``` r
 group = rep(letters[1:2], length.out = 6)
->>>>>>> master
 group
 ```
 
@@ -447,11 +421,7 @@ data.frame(group,
 
 The `replicate()` function is a real workhorse when making repeated
 simulations as it is for *repeated evaluation of an expression (which
-<<<<<<< HEAD
-will usually involves random number generation)*.
-=======
 will usually involve random number generation)*.
->>>>>>> master
 
 It takes three arguments:
 
@@ -460,11 +430,7 @@ It takes three arguments:
   - `expr`, the expression that should be run repeatedly. This is often
     a function.  
   - `simplify`, which controls the type of output the results of `expr`
-<<<<<<< HEAD
-    are saved into. Use `simplify = FALSE` to get vectors saved into a
-=======
     are saved into. Use `simplify = FALSE` to get output saved into a
->>>>>>> master
     list instead of in an array.
 
 ## Simple example of `replicate()`
@@ -527,7 +493,6 @@ list1
 
 ## Using `replicate()` to repeatedly make a dataset
 
-<<<<<<< HEAD
 Let’s replicate the “two groups with no difference in means” dataset
 from earlier.
 
@@ -546,8 +511,6 @@ data.frame(group = rep(letters[1:2], each = 3),
 
 This can be put as the `expr` in `replicate()`.
 
-=======
->>>>>>> master
 ``` r
 simlist = replicate(n = 3, 
           expr = data.frame(group = rep(letters[1:2], each = 3),
@@ -564,7 +527,6 @@ str(simlist)
     ## List of 3
     ##  $ :'data.frame':    6 obs. of  2 variables:
     ##   ..$ group   : Factor w/ 2 levels "a","b": 1 1 1 2 2 2
-<<<<<<< HEAD
     ##   ..$ response: num [1:6] -0.314 -0.183 1.47 -0.866 1.527 ...
     ##  $ :'data.frame':    6 obs. of  2 variables:
     ##   ..$ group   : Factor w/ 2 levels "a","b": 1 1 1 2 2 2
@@ -572,15 +534,6 @@ str(simlist)
     ##  $ :'data.frame':    6 obs. of  2 variables:
     ##   ..$ group   : Factor w/ 2 levels "a","b": 1 1 1 2 2 2
     ##   ..$ response: num [1:6] -0.943 -1.022 0.281 0.545 0.131 ...
-=======
-    ##   ..$ response: num [1:6] -1.663 0.576 0.473 -0.543 1.128 ...
-    ##  $ :'data.frame':    6 obs. of  2 variables:
-    ##   ..$ group   : Factor w/ 2 levels "a","b": 1 1 1 2 2 2
-    ##   ..$ response: num [1:6] -0.314 -0.183 1.47 -0.866 1.527 ...
-    ##  $ :'data.frame':    6 obs. of  2 variables:
-    ##   ..$ group   : Factor w/ 2 levels "a","b": 1 1 1 2 2 2
-    ##   ..$ response: num [1:6] 1.03 0.84 0.217 -0.673 0.133 ...
->>>>>>> master
 
 Here is the first of the three.
 
@@ -589,21 +542,12 @@ simlist[[1]]
 ```
 
     ##   group   response
-<<<<<<< HEAD
     ## 1     a -0.3141739
     ## 2     a -0.1826816
     ## 3     a  1.4704785
     ## 4     b -0.8658988
     ## 5     b  1.5274670
     ## 6     b  1.0541781
-=======
-    ## 1     a -1.6630805
-    ## 2     a  0.5759095
-    ## 3     a  0.4727601
-    ## 4     b -0.5427317
-    ## 5     b  1.1276871
-    ## 6     b -1.6477976
->>>>>>> master
 
 # What’s the next step?
 
