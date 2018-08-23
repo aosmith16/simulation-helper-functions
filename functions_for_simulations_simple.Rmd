@@ -195,6 +195,7 @@ When using `times` this way it will only take a single value and not a vector.
 rep(letters[1:2], each = 2, times = 3)
 ```
 
+
 ## Combining `each` with `length.out`
 
 This is another way to impart imbalance.
@@ -299,6 +300,7 @@ data.frame(group,
             response)
 ```
 
+
 # Repeatedly simulating data with `replicate()`
 
 The `replicate()` function is a real workhorse when making repeated simulations as it is for *repeated evaluation of an expression (which will usually involve random number generation)*.
@@ -308,6 +310,7 @@ It takes three arguments:
 * `n`, which is the number of replications to perform.  This is to set the number of repeated runs we want.  
 * `expr`, the expression that should be run repeatedly.  This is often a function.  
 * `simplify`, which controls the type of output the results of `expr` are saved into.  Use `simplify = FALSE` to get output saved into a list instead of in an array.  
+
 
 ## Simple example of `replicate()`
 
@@ -327,6 +330,7 @@ set.seed(16)
 replicate(n = 3, 
           expr = rnorm(n = 5, mean = 0, sd = 1) )
 ```
+
 
 ## An equivalent `for()` loop example
 
