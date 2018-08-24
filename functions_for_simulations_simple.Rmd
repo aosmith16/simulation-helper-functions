@@ -279,7 +279,7 @@ response
 How do we get the `group` pattern correct?
 
 ```{r, eval = FALSE}
-group = rep(letters[1:2], ?)
+rep(letters[1:2], ?)
 ```
 
 
