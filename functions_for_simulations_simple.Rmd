@@ -7,11 +7,12 @@ output: github_document
 
 # Overview
 
-Here's what we'll talk about today:
+Here's what we'll do today:
 
 1. Simulate quantitative variables with `rnorm()` and `runif()`
 2. Generate character variables that represent groups via `rep()`.  
-3. Use `replicate()` to repeat the data simulation process many times
+3. Simulate data with both quantitative and categorical variables.  
+4. Use `replicate()` to repeat the data simulation process many times
 
 # Generating random numbers
 

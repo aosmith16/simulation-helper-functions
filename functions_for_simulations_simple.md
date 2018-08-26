@@ -6,11 +6,12 @@ August 28, 2018
 
 # Overview
 
-Here’s what we’ll talk about today:
+Here’s what we’ll do today:
 
 1.  Simulate quantitative variables with `rnorm()` and `runif()`
 2.  Generate character variables that represent groups via `rep()`.  
-3.  Use `replicate()` to repeat the data simulation process many times
+3.  Simulate data with both quantitative and categorical variables.  
+4.  Use `replicate()` to repeat the data simulation process many times
 
 # Generating random numbers
 
@@ -26,7 +27,7 @@ Pull 5 random numbers from a standard normal distribution.
 rnorm(5)
 ```
 
-    ## [1] -0.07421413  1.79579756  0.76461576 -0.16386461  0.71845964
+    ## [1] -0.5321830 -1.4294463  1.3708387 -0.5813456 -0.5358449
 
 ### Writing out arguments for clearer code
 
@@ -37,7 +38,7 @@ parameters of the generating distribution clear.
 rnorm(n = 5, mean = 0, sd = 1)
 ```
 
-    ## [1]  0.7999514  1.2629863  0.3792429  0.3808300 -0.5720355
+    ## [1] -1.69379888 -0.34043801 -0.66328428 -3.06050315  0.03696066
 
 ### Setting the random seed for reproducible random numbers
 
@@ -388,7 +389,7 @@ response
 How do we get the `group` pattern correct?
 
 ``` r
-group = rep(letters[1:2], ?)
+rep(letters[1:2], ?)
 ```
 
 We need `times` or `length.out` to repeat the whole vector to match the

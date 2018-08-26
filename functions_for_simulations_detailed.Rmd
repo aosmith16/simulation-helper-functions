@@ -21,15 +21,16 @@ local({
 
 # Overview
 
-There are many reasons we might want to simulate data in R, and I find being able to simulate data to be incredible useful in my day-to-day work.  But how does someone get started simulating data?  
+There are many reasons we might want to simulate data in R, and I find being able to simulate data to be incredibly useful in my day-to-day work.  But how does someone get started simulating data?  
 
-Today I'm going to take a closer look at some of the R functions that are useful to get to know when simulating data.  These functions are all from base R packages, not in add-on packages,, so some of them may already familiar to you.
+Today I'm going to take a closer look at some of the R functions that are useful to get to know when simulating data.  These functions are all from base R packages, not in add-on packages, so some of them may already familiar to you.
 
-Here's the goal for today:
+Here's what we'll do today:
 
-1. Simulate quantitative variables via random number generation with `rnorm()`, `runif()` and `rpois()`
-2. Generate character variables that represent groups via `rep()`.  We'll explore how to create character vectors with different repeating patterns
-3. Learn to use `replicate()` to repeat the data simulation process many times
+1. Simulate quantitative variables via random number generation with `rnorm()`, `runif()` and `rpois()`.
+2. Generate character variables that represent groups via `rep()`.  We'll explore how to create character vectors with different repeating patterns.
+3.  Create data with both quantitative and categorical variables, making use of functions from the first two steps above.
+4. Learn to use `replicate()` to repeat the data simulation process many times.
 
 # Generating random numbers
 
