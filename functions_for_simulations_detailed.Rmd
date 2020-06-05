@@ -34,7 +34,7 @@ Here's what we'll do today:
 
 # Generating random numbers
 
-An easy way to generate numeric data is to pull random numbers from some distribution.  This can be done via the functions for generating random deviates.  These functions always start with `r` (for "random").
+One way to generate numeric data is to pull random numbers from some distribution.  This can be done via the functions for generating random deviates.  These functions always start with `r` (for "random").
 
 The basic distributions that I use the most for generating random numbers are the normal (`rnorm()`) and uniform (`runif()`) distributions.  We'll look at those today, plus the Poisson (`rpois()`) distribution for generating discrete counts. 
 
@@ -62,7 +62,7 @@ There are a couple things about this code and the output to discuss.
 
 First, the code got me 5 numbers, which is what I wanted.  However, the code itself isn't particularly clear.  What I might refer to as lazy coding on my part can look pretty mysterious to someone reading my code (or to my future self reading my code).  Since I used the default values for `mean` and `sd`, it's not clear exactly what distribution I drew the numbers from.   
 
-### Writing out arguments in for clearer code
+### Writing out arguments for clearer code
 
 Here's clearer code to do the same thing, where I write out the mean and standard deviation arguments explicitly even though I'm using the default values.  It is certainly not necessary to always be this careful, but I don't think I've run into a time when it was bad to have clear code.
 
@@ -173,7 +173,7 @@ runif(n = 5, min = 50, max = 100)
 
 ## Example of using the simulated numbers from `runif()`
 
-One situation where I've found `runif()` handy is when I wanted to demonstrate the effect of the relative size of the variable values on the size of the estimated coefficient in a regression.  For example, the relative size of a variable measured in kilometers is smaller than if that variable was converted into meters.
+One situation where I've found `runif()` handy is when I wanted to demonstrate the effect of the relative size of the variable values on the size of the estimated coefficient in a regression.  For example, the size of the coefficient measured in kilometers is smaller than if that variable was converted into meters.
 
 Let's generate some data with the response variable (`y`) pulled from a standard normal distribution and then an explanatory variable with values between 1 and 2.  The two variables are unrelated.  
 
@@ -247,7 +247,7 @@ y = rpois(100, lambda = 100)
 summary(y)
 ```
 
-And the distribution is pretty symmetric compared to the distribution with  smaller mean.
+And the distribution is pretty symmetric compared to the distribution with the smaller mean.
 
 ```{r}
 hist(y)
@@ -267,7 +267,7 @@ The first argument of `rep()` is the vector to be repeated.  One option is to wr
 
 Letters can be pulled out via the extract brackets (`[`).  I use these built-in constants for pure convenience when I need to make a basic categorical vector and it doesn't matter what form those categories take.  I find it more straightforward to type out the word and brackets than a vector of characters (complete with all those pesky quotes and such).
 
-Here's the first two `letters`.
+Here are the first two `letters`.
 
 ```{r}
 letters[1:2]
@@ -389,7 +389,7 @@ The second factor, which we'll call `factor`, will take on the values "C", "D", 
 LETTERS[3:5]
 ```
 
-We need to repeat the values in a way that every combination of `group` and `factor` is present in the dataset one time.
+We need to repeat the values in a way that every combination of `group` and `factor` is present in the dataset at one time.
 
 Remember the `group` factor is repeated elementwise.
 
@@ -510,7 +510,7 @@ The `replicate()` function takes three arguments:
 * `expr`, the expression that should be run repeatedly.  This is often a function.  
 * `simplify`, which controls the type of output the results of `expr` are saved into.  Use `simplify = FALSE` to get output saved into a list instead of in an array.  
 
-## Simple example of replicate()
+## Simple example of `replicate()`
 
 Let's say we want to simulate some values from a normal distribution, which we can do using the `rnorm()` function as above.  But now instead of drawing some number of values from a distribution one time we want to do it many times.  This could be something we'd do when demonstrating the central limit theorem, for example.
 
@@ -560,7 +560,7 @@ Earlier we were making datasets with random numbers and some grouping variables.
 
 ```{r}
 data.frame(group = rep(letters[1:2], each = 3),
-                     response = rnorm(n = 6, mean = 0, sd = 1) )
+           response = rnorm(n = 6, mean = 0, sd = 1) )
 ```
 
 
@@ -571,7 +571,7 @@ I'll replicate things 3 times again to easily see the output.  I still use `simp
 ```{r}
 simlist = replicate(n = 3, 
           expr = data.frame(group = rep(letters[1:2], each = 3),
-                     response = rnorm(n = 6, mean = 0, sd = 1) ),
+                            response = rnorm(n = 6, mean = 0, sd = 1) ),
           simplify = FALSE)
 ```
 
