@@ -121,7 +121,7 @@ $(document).ready(function () {
 <h2>Introduction</h2>
 <p><img src="https://raw.githubusercontent.com/aosmith16/r-basics-workshop/master/images/Rlogo.png" width="100px" /></p>
 <p>There are many reasons you might want to simulate data in R. I find being able to simulate data to be incredibly useful in my day-to-day work. But how does someone get started simulating data?</p>
-<p>This tutorial will take you through some R functions that are useful to get to know when simulating data.</p>
+<p>This tutorial will take you through some R functions that are useful to get to know when simulating data. You can see the blog post version of this material <a href="https://aosmith.rbind.io/2018/08/29/getting-started-simulating-data/">here</a>.</p>
 <p>You will learn to:</p>
 <ol style="list-style-type: decimal">
 <li>Simulate quantitative variables via random number generation with <code>rnorm()</code>, <code>runif()</code> and <code>rpois()</code>.</li>
@@ -781,7 +781,7 @@ simlist</code></pre>
 <div id="section-whats-the-next-step" class="section level3">
 <h3>What’s the next step?</h3>
 <p>The tutorial ends here, but there’s still a lot more to learn about simulations. For a simulation to explore long-run behavior, some process is going to be repeated many times. You did the repeating via <code>replicate()</code>. The next step would be to extract whatever results you are interested in exploring. This latter process is often going to involve some sort of looping.</p>
-<p>By saving your generated variables or data.frames into a list, you can loop through it via list looping functions such as <code>lapply()</code> or <code>purrr::map()</code>. The family of <em>map</em> functions are newer and have a lot of convenient output types that make them pretty useful. If you want to see how using those might look in a simulation, you can see a few examples in my blog post <a href="https://aosmith.rbind.io/2018/06/05/a-closer-look-at-replicate-and-purrr/">A closer look at replicate() and purrr::map() for simulations</a>.</p>
+<p>By saving your generated variables or data.frames into a list, you can loop through it via list looping functions such as <code>lapply()</code> or <code>purrr::map()</code>. The family of <em>map</em> functions from package <strong>purrr</strong> are newer and have a lot of convenient output types that make them pretty useful. If you want to see how using those might look in a simulation, you can see a few examples in my blog post <a href="https://aosmith.rbind.io/2018/06/05/a-closer-look-at-replicate-and-purrr/">A closer look at replicate() and purrr::map() for simulations</a>.</p>
 Happy simulating! 
 <script type="application/shiny-prerendered" data-context="server-start">
 library(learnr)
